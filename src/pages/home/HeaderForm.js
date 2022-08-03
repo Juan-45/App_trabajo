@@ -12,6 +12,7 @@ const HeaderForm = ({ setIPPHeader }) => {
     debouncedInstructor,
     debouncedSecretary,
   } = useHeaderForm({ setIPPHeader });
+
   return (
     <Grid
       container
