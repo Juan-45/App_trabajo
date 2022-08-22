@@ -1,7 +1,6 @@
 import "./App.css";
 import { ThemeProvider } from "@mui/material/styles";
-import { BrowserRouter } from "react-router-dom";
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import theme from "theme";
 import Context from "./Context";
 import React from "react";
@@ -50,6 +49,7 @@ const App = () => {
             />
             <Routes>
               <Route path='/' element={<Home />} />
+              <Route path='test' element={<h2>Prueba</h2>} />
             </Routes>
           </Context.Provider>
         </BrowserRouter>

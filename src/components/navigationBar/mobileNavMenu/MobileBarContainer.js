@@ -3,7 +3,7 @@ import { Box } from "@mui/material/";
 const MobileBarContainer = ({ children }) => (
   <Box
     sx={{
-            display: { xs: "flex", md: "none" },
+      display: { xs: "flex", md: "none" },
     }}
   >
     {children}
