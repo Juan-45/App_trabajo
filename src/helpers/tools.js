@@ -61,17 +61,33 @@ const generateDocument = async (data) => {
   }
 };
 
-const getInstanceFromFile = async (callback, config) => {
+const manageInstanceFromFile = async ({ callback, instanceSettings }) => {
   const file = await getFile();
   if (file.kind === "file") {
     const arrayBuffer = await getArrayBuffer(file);
-    const doc = getDocxTemplaterInstance(arrayBuffer, config);
+    const doc = getDocxTemplaterInstance(arrayBuffer, instanceSettings);
     callback(doc);
+    //Luego de usar el metodo render ya estaria lista para obtener un blob y descargarla
   }
 };
 
-const generateItineratedDocument = (subTemplateInstance) => {
-  subTemplateInstance.render({
+const downloadFileFromInstance = ({ templateInstance, fileName }) => {
+  const blob = getBlob(templateInstance, {
+    type: "blob",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  });
+  downloadFile(blob, fileName);
+};
+
+/*const generateDataStoreDocument = (templateInstance) => {
+
+
+
+}*/
+
+const generateItineratedDocument = (templateInstance) => {
+  templateInstance.render({
     raw_loop_pagebreak: `<w:br w:type="page"/>`,
     subTemplateLoop: [
       {
@@ -101,18 +117,27 @@ const generateItineratedDocument = (subTemplateInstance) => {
       },
     ],
   });
-  const blob = getBlob(subTemplateInstance, {
+
+  downloadFileFromInstance({
+    templateInstance,
+    fileName: "output.docx",
+  });
+  /*
+  const blob = getBlob(templateInstance, {
     type: "blob",
     mimeType:
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   });
-  downloadFile(blob, "output.docx");
+  downloadFile(blob, "output.docx");*/
 };
 
 const createRecorridas = () =>
-  getInstanceFromFile(generateItineratedDocument, {
-    paragraphLoop: true,
-    linebreaks: true,
+  manageInstanceFromFile({
+    callback: generateItineratedDocument,
+    instanceSettings: {
+      paragraphLoop: true,
+      linebreaks: true,
+    },
   });
 
-export { generateDocument, getInstanceFromFile, createRecorridas };
+export { generateDocument, manageInstanceFromFile, createRecorridas };
