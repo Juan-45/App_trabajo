@@ -17,8 +17,16 @@ const monthNames = [
 
 const currentDayNumber = currentDate.getDate();
 
-const currentMonthString = monthNames[currentDate.getMonth()];
+const getMonthString = (date) => monthNames[date.getMonth()];
+
+const currentMonthString = getMonthString(currentDate);
 
 const currentYear = currentDate.getFullYear();
 
-export { currentDate, currentDayNumber, currentMonthString, currentYear };
+export {
+  currentDate,
+  currentDayNumber,
+  currentMonthString,
+  currentYear,
+  getMonthString,
+};
