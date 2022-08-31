@@ -1,15 +1,17 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-const useNavigation = (callback = () => {}) => {
+const useNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const getOnClickHandler = (currentPath) => () => {
-    if (location.pathname !== currentPath) {
-      navigate(currentPath);
-    } else navigate(0);
-    callback();
-  };
+  const getOnClickHandler =
+    (currentPath, callback = () => {}) =>
+    () => {
+      if (location.pathname !== currentPath) {
+        navigate(currentPath);
+      } else navigate(0);
+      callback();
+    };
 
   return {
     getOnClickHandler,
