@@ -11,10 +11,11 @@ const useSave = () => {
 
   const saveAppData = (data) => saveData(data, appDataFileName);
 
+  console.log("appData instructors", instructors);
   const appDataAsString = {
-    tours: stringifyDataFromArray(tours),
-    prosecutions: stringifyDataFromArray(prosecutions),
-    instructors: stringifyDataFromArray(instructors),
+    tours: stringifyDataFromArray(tours, "tours"),
+    prosecutions: stringifyDataFromArray(prosecutions, "prosecutions"),
+    instructors: stringifyDataFromArray(instructors, "instructors"),
   };
 
   return {

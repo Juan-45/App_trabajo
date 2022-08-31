@@ -1,4 +1,4 @@
-﻿import { TextField, Autocomplete } from "@mui/material";
+import { TextField, Autocomplete } from "@mui/material";
 import useComboBox from "./comboBox/useComboBox";
 
 const ComboBox = ({
@@ -24,7 +24,8 @@ const ComboBox = ({
     <Autocomplete
       value={value}
       onChange={comboBoxHandler}
-      isOptionEqualToValue={(option, value) => option.Id === value.id}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
+      noOptionsText="No hay valor disponible"
       openOnFocus={true}
       renderOption={(props, option) => {
         return (

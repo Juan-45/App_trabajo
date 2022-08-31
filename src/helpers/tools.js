@@ -180,7 +180,7 @@ const stringifyDataFromArray = (array, propertyStr) => {
 
     if (array.length !== 0) {
       let stringifyData = "";
-      console.log("array", array);
+
       array.forEach((obj) => {
         stringifyData = stringifyData + "/";
         stringifyData = itinerateProperties(obj, stringifyData);
@@ -212,6 +212,8 @@ const createArrayFromStringifyData = (string, propertyStr) => {
   );
 
   const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
+
+  objectsStringsArr.pop();
 
   const getPropertiesAndValuesArrFrom = (str) =>
     str.split(",").filter(isNotEmptyString);

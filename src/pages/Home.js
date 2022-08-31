@@ -4,6 +4,10 @@ import { v4 as uuid } from "uuid";
 import useDebounceHandler from "hooks/useDebounceHandler";
 import useSave from "hooks/useSave";
 import useLoad from "hooks/useLoad";
+import {
+  removeDefaultItemFrom,
+  allPropertiesValuesAreValid,
+} from "helpers/helperFunctions";
 
 import PageWrapper from "components/PageWrapper";
 import PageTitle from "components/PageTitle";
@@ -36,7 +40,10 @@ const Home = () => {
   const { instructors, prosecutions, setContextState } =
     React.useContext(Context);
 
-  const [shouldReset, setShouldReset] = React.useState(false);
+  const [shouldReset, setShouldReset] = React.useState({
+    prosecution: false,
+    instructor: false,
+  });
 
   const [prosecution, setProsecution] = React.useState({
     prosecution: "",
@@ -52,7 +59,10 @@ const Home = () => {
 
   const getOnChangeHandler = React.useCallback(
     (name) => (value) => {
-      setShouldReset(false);
+      setShouldReset({
+        prosecution: false,
+        instructor: false,
+      });
       if (name === "instructor" || name === "rank") {
         setInstructor((prevState) => ({
           ...prevState,
@@ -101,25 +111,51 @@ const Home = () => {
 
   const addNewId = () => uuid();
 
-  const addInstructor = (instructor) =>
-    setContextState((prevState) => ({
-      ...prevState,
-      instructors: prevState.instructors.push({
-        label: instructor.instructor,
-        adjunct: instructor.rank,
-        id: addNewId(),
-      }),
-    }));
+  const addInstructor = (instructor) => {
+    if (allPropertiesValuesAreValid(instructor)) {
+      setShouldReset({
+        prosecution: false,
+        instructor: true,
+      });
+      setContextState((prevState) => {
+        const currentArr = removeDefaultItemFrom([...prevState.instructors]);
 
-  const addProsecution = (prosecution) =>
-    setContextState((prevState) => ({
-      ...prevState,
-      prosecutions: prevState.prosecutions.push({
-        label: prosecution.prosecution,
-        adjunct: prosecution.prosecutor,
-        id: addNewId(),
-      }),
-    }));
+        currentArr.push({
+          label: instructor.instructor,
+          adjunct: instructor.rank,
+          id: addNewId(),
+        });
+
+        return {
+          ...prevState,
+          instructors: currentArr,
+        };
+      });
+    }
+  };
+
+  const addProsecution = (prosecution) => {
+    if (allPropertiesValuesAreValid(prosecution)) {
+      setShouldReset({
+        prosecution: true,
+        instructor: false,
+      });
+      setContextState((prevState) => {
+        const currentArr = [...prevState.prosecutions];
+
+        currentArr.push({
+          label: prosecution.prosecution,
+          adjunct: prosecution.prosecutor,
+          id: addNewId(),
+        });
+
+        return {
+          ...prevState,
+          prosecutions: currentArr,
+        };
+      });
+    }
+  };
 
   const getRemoveHandlerFor = (name) => (id) => {
     setContextState((prevState) => ({
@@ -151,41 +187,42 @@ const Home = () => {
       <CustomPaper>
         <PageTitle>Agregar instructor.</PageTitle>
         <Input
-          label='Instructor'
+          label="Instructor"
           onChange={instructorNameOnChange}
-          shouldReset={shouldReset}
-          placeholder='Masciotta Marcela'
+          shouldReset={shouldReset.instructor}
+          placeholder="Masciotta Marcela"
         />
         <Input
-          label='Jerarquía'
+          label="Jerarquía"
           onChange={instructorRankOnChange}
-          shouldReset={shouldReset}
-          placeholder='Subcomisario'
+          shouldReset={shouldReset.instructor}
+          placeholder="Subcomisario"
         />
         <Button onClick={() => addInstructor(instructor)}>Agregar</Button>
       </CustomPaper>
       <CustomPaper>
         <PageTitle>Agregar fiscalía.</PageTitle>
         <Input
-          label='Fiscalía'
+          label="Fiscalía"
           onChange={prosecutionOnChange}
-          shouldReset={shouldReset}
-          placeholder='UFI Y J Nro. 1'
+          shouldReset={shouldReset.prosecution}
+          placeholder="UFI Y J Nro. 1"
         />
         <Input
-          label='Fiscal a/C'
+          label="Fiscal a/C"
           onChange={prosecutorOnChange}
-          shouldReset={shouldReset}
-          placeholder='Dr. Oldani'
+          shouldReset={shouldReset.prosecution}
+          placeholder="Dr. Oldani"
         />
         <Button onClick={() => addProsecution(prosecution)}>Agregar</Button>
       </CustomPaper>
       <CustomPaper>
         <PageTitle>Seleccionar instructor actual.</PageTitle>
         <ComboBox
-          label='Instructor'
+          label="Instructor"
           options={instructors}
           onChange={currentInstructorOnChange}
+          shouldReset={instructors.length === 0}
         />
         <Button
           onClick={() =>
@@ -196,11 +233,12 @@ const Home = () => {
         </Button>
       </CustomPaper>
       <CustomPaper>
-        <PageTitle>Seleccionar instructor actual.</PageTitle>
+        <PageTitle>Seleccionar fiscalía.</PageTitle>
         <ComboBox
-          label='Fiscalías'
+          label="Fiscalías"
           options={prosecutions}
           onChange={currentProsecutionOnChange}
+          shouldReset={prosecutions.length === 0}
         />
         <Button
           onClick={() =>

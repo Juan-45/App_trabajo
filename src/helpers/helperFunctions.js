@@ -34,6 +34,12 @@ const stableSort = (array, comparator) => {
   return stabilizedThis.map((el) => el[0]);
 };
 
+const removeDefaultItemFrom = (arr) =>
+  arr.filter((obj) => obj.id !== "default");
+
+const allPropertiesValuesAreValid = (obj) =>
+  Object.keys(obj).filter((properties) => obj[properties] === "").length === 0;
+
 //FUNCIONES PARA RENDERIZADO CONDICIONAL
 
 const renderIf = (condition) => (component) => condition ? component : null;
@@ -51,6 +57,8 @@ const setColorOnEvenIndexes = (index, color) =>
   setColorIf(isEven(index))(color);
 
 export {
+  allPropertiesValuesAreValid,
+  removeDefaultItemFrom,
   getComparator,
   stableSort,
   setColorOnEvenIndexes,

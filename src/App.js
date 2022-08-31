@@ -56,17 +56,17 @@ const App = () => {
         id: "default",
       },
     ],
-    instructors: [{ label: "No hay datos", adjunct: "default", id: "default" }],
-    currentInstructor: { rank: "", instructor: "" },
-    prosecutions: [
-      { label: "No hay datos", adjunct: "default", id: "default" },
+    instructors: [
+      /*{ label: "No hay datos", adjunct: "default", id: "default" }*/
     ],
+    currentInstructor: { rank: "", instructor: "" },
+    prosecutions: [],
   });
 
   console.log("Context", contextState);
 
   return (
-    <div className='App'>
+    <div className="App">
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Context.Provider value={{ ...contextState, setContextState }}>
@@ -75,8 +75,8 @@ const App = () => {
               loggedUserName={"OSA Herrera Juan José"}
             />
             <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/tours' element={<Tours />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/tours" element={<Tours />} />
             </Routes>
           </Context.Provider>
         </BrowserRouter>

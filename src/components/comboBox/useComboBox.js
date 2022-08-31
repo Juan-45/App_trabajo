@@ -4,18 +4,8 @@ const useComboBox = ({ onChange, shouldReset, options, valueId }) => {
   const [value, setValue] = React.useState(null);
 
   const comboBoxHandler = (event, newValue) => {
-    const localValueToUpdate = newValue
-      ? newValue.label
-      : "No hay valor disponible";
-    const formValueToUpdate = newValue
-      ? {
-          label: newValue.label,
-          adjunct: newValue.adjunct,
-          id: newValue.id,
-        }
-      : "No hay valor disponible";
-    setValue(localValueToUpdate);
-    onChange(formValueToUpdate);
+    setValue(newValue);
+    onChange(newValue);
   };
 
   React.useEffect(() => {
@@ -25,10 +15,9 @@ const useComboBox = ({ onChange, shouldReset, options, valueId }) => {
   }, [shouldReset]);
   React.useEffect(() => {
     if (valueId) {
-      const newLocalValue = options.find((obj) => obj.id === valueId).label;
-      const newFormValue = options.find((obj) => obj.id === valueId).id;
-      setValue(newLocalValue);
-      onChange(newFormValue);
+      const match = options.find((obj) => obj.id === valueId);
+      setValue(match);
+      onChange(match);
     }
   }, [valueId, options, onChange]);
   return {
