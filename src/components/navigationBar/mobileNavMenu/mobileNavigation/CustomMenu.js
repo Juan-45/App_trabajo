@@ -1,5 +1,5 @@
 import { Menu } from "@mui/material";
-import theme from "theme/theme";
+import theme from "theme";
 
 const CustomMenu = ({ children, isTouchScreen, ...props }) => (
   <Menu

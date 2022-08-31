@@ -6,10 +6,7 @@ const useMenu = () => {
     (e) => setElementPosition(e.currentTarget),
     []
   );
-  const handleCloseMenu = React.useCallback(
-    () => setElementPosition(false),
-    []
-  );
+  const handleCloseMenu = React.useCallback(() => setElementPosition(null), []);
 
   return {
     setElementPosition,

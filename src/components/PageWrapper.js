@@ -1,7 +1,10 @@
-﻿import { styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { Box } from "@mui/material";
 
 const CustomBox = styled(Box)({
+  display: "flex",
+  flexWrap: "wrap",
+
   marginRight: "auto",
   marginLeft: "auto",
   marginTop: "50px",
@@ -12,7 +15,14 @@ const CustomBox = styled(Box)({
 });
 
 const PageWrapper = ({ children }) => (
-  <CustomBox sx={{ width: { xs: "100%", lg: "1366px" } }}>{children}</CustomBox>
+  <CustomBox
+    sx={{
+      width: { xs: "100%", lg: "1366px" },
+      justifyContent: "center",
+    }}
+  >
+    {children}
+  </CustomBox>
 );
 
 export default PageWrapper;

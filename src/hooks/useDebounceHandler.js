@@ -1,22 +1,16 @@
 import { useDebouncedCallback } from "use-debounce";
 
-const useDebounceHandler = () => {
+const useDebounceHandler = (callback) => {
   /*const getDebouncedHandler = (name, callback = () => {}) =>
     useDebouncedCallback((value) => callback(name, value), 150, {
       trailing: true,
     });*/
 
-  const getDebouncedHandler = useDebouncedCallback(
-    (callback) => callback,
-    150,
-    {
-      trailing: true,
-    }
-  );
+  const getDebouncedCallback = useDebouncedCallback(callback, 150, {
+    trailing: true,
+  });
 
-  return {
-    getDebouncedHandler,
-  };
+  return getDebouncedCallback;
 };
 
 export default useDebounceHandler;

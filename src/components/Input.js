@@ -1,15 +1,19 @@
 import { TextField, Grid } from "@mui/material";
 import useInput from "hooks/useInput";
 
-const Input = ({ onChange, ...props }) => {
-  const { value, handleOnChange } = useInput({ onChange, initialValue: "" });
+const Input = ({ onChange, initialValue, shouldReset, ...props }) => {
+  const { value, handleOnChange } = useInput({
+    onChange,
+    initialValue,
+    shouldReset,
+  });
 
   return (
     <Grid item xs={12} sm={6} sx={{ padding: { xs: "6px", sm: "8px" } }}>
       <TextField
-        variant="filled"
+        variant='filled'
         fullWidth
-        size="small"
+        size='small'
         value={value}
         onChange={handleOnChange}
         {...props}

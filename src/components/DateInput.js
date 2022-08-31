@@ -5,17 +5,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import esLocale from "date-fns/locale/es";
 import useDateInput from "./dateInput/useDateInput";
 
-const DateInput = ({ onChange, ...props }) => {
-  const { value, handleOnChange } = useDateInput({ onChange });
+const DateInput = ({ onChange, initialValue, shouldReset, ...props }) => {
+  const { value, handleOnChange } = useDateInput({
+    onChange,
+    initialValue,
+    shouldReset,
+  });
 
   return (
-    <Grid
-      container
-      item
-      xs={12}
-      sm={6}
-      sx={{ padding: { xs: "6px", sm: "8px" } }}
-    >
+    <Grid container item sx={{ padding: { xs: "6px", sm: "8px" } }}>
       <LocalizationProvider dateAdapter={AdapterDateFns} locale={esLocale}>
         <DatePicker
           {...props}

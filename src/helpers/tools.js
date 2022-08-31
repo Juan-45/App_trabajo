@@ -1,6 +1,7 @@
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { saveAs } from "file-saver";
+import { isNotEmptyString } from "helpers/data";
 
 const getFile = async () => {
   let fileHandle;
@@ -42,8 +43,6 @@ const testFunction = (arrayBuffer, data) => {
     linebreaks: true,
   });
 
-  console.log("instancia", doc);
-
   doc.render(data);
   const blob = getBlob(doc, {
     type: "blob",
@@ -61,13 +60,12 @@ const generateDocument = async (data) => {
   }
 };
 
-const manageInstanceFromFile = async ({ callback, instanceSettings }) => {
+const getInstanceFromFile = async (instanceSettings) => {
   const file = await getFile();
   if (file.kind === "file") {
     const arrayBuffer = await getArrayBuffer(file);
     const doc = getDocxTemplaterInstance(arrayBuffer, instanceSettings);
-    callback(doc);
-    //Luego de usar el metodo render ya estaria lista para obtener un blob y descargarla
+    return doc;
   }
 };
 
@@ -80,13 +78,7 @@ const downloadFileFromInstance = ({ templateInstance, fileName }) => {
   downloadFile(blob, fileName);
 };
 
-/*const generateDataStoreDocument = (templateInstance) => {
-
-
-
-}*/
-
-const generateItineratedDocument = (templateInstance) => {
+/*const generateItineratedDocument = (templateInstance, data, fileName) => {
   templateInstance.render({
     raw_loop_pagebreak: `<w:br w:type="page"/>`,
     subTemplateLoop: [
@@ -120,24 +112,146 @@ const generateItineratedDocument = (templateInstance) => {
 
   downloadFileFromInstance({
     templateInstance,
-    fileName: "output.docx",
+    fileName//: "output.docx",
   });
-  /*
-  const blob = getBlob(templateInstance, {
-    type: "blob",
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  
+}; */
+
+const generateItineratedDocument = (templateInstance, data, fileName) => {
+  const getDataWithPageBreakEnding = (data) => {
+    const arrayWithoutLastItem = data.filter(
+      (element, index) => index < data.length - 1
+    );
+
+    const lastItem = data[data.length - 1];
+
+    const lastItemWithPageBreakEnding = {
+      ...lastItem,
+      raw_loop_pagebreak: "",
+    };
+
+    return [...arrayWithoutLastItem, lastItemWithPageBreakEnding];
+  };
+
+  templateInstance.render({
+    raw_loop_pagebreak: `<w:br w:type="page"/>`,
+    loop: getDataWithPageBreakEnding(data),
   });
-  downloadFile(blob, "output.docx");*/
+
+  downloadFileFromInstance({
+    templateInstance,
+    fileName,
+  });
 };
 
-const createRecorridas = () =>
-  manageInstanceFromFile({
-    callback: generateItineratedDocument,
-    instanceSettings: {
-      paragraphLoop: true,
-      linebreaks: true,
-    },
+//Esta función la podría llamar usando .then() para luego de crear doc inmediatamente solicitar template para nota de elevacion y crear tb ese doc
+/*const createToursElevationNotes = async () => {
+
+  const instance = await getInstanceFromFile({
+    paragraphLoop: true,
+    linebreaks: true,
   });
 
-export { generateDocument, manageInstanceFromFile, createRecorridas };
+
+
+}*/
+
+const createToursTemplate = async (data, fileName) => {
+  const instance = await getInstanceFromFile({
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  generateItineratedDocument(instance, data, fileName);
+};
+
+const stringifyDataFromArray = (array, propertyStr) => {
+  const itinerateProperties = (obj, stringifyData) => {
+    let currentStringifyData = stringifyData;
+    for (const property in obj) {
+      currentStringifyData =
+        currentStringifyData + `${property}:${obj[property]},`;
+    }
+    return currentStringifyData;
+  };
+
+  const itinerateObjectsIn = (array, propertyStr) => {
+    const closeStringWithPropertyName = (strBase, closingStr) =>
+      strBase + closingStr + "#";
+
+    if (array.length !== 0) {
+      let stringifyData = "";
+      console.log("array", array);
+      array.forEach((obj) => {
+        stringifyData = stringifyData + "/";
+        stringifyData = itinerateProperties(obj, stringifyData);
+        stringifyData = stringifyData + "/";
+      });
+      stringifyData = closeStringWithPropertyName(stringifyData, propertyStr);
+      return stringifyData;
+    }
+  };
+
+  return itinerateObjectsIn(array, propertyStr);
+};
+
+const saveData = async (data, fileName) => {
+  const instance = await getInstanceFromFile();
+
+  instance.render(data);
+  downloadFileFromInstance({
+    templateInstance: instance,
+    fileName,
+  });
+};
+
+const createArrayFromStringifyData = (string, propertyStr) => {
+  const mainDataArr = string.split("#").filter(isNotEmptyString);
+
+  const currentEntity = mainDataArr.find(
+    (str) => str.search(propertyStr) !== -1
+  );
+
+  const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
+
+  const getPropertiesAndValuesArrFrom = (str) =>
+    str.split(",").filter(isNotEmptyString);
+
+  const getObject = (propertiesAndValuesArray) => {
+    const object = {};
+
+    propertiesAndValuesArray.forEach((str) => {
+      const property = str.split(":").filter(isNotEmptyString)[0];
+      const value = str.split(":").filter(isNotEmptyString)[1];
+      object[property] = value;
+    });
+
+    return object;
+  };
+
+  const getArrayOfObjectsFrom = (objectsStringsArr) => {
+    const array = [];
+
+    objectsStringsArr.forEach((str) => {
+      array.push(getObject(getPropertiesAndValuesArrFrom(str)));
+    });
+    return array;
+  };
+
+  return getArrayOfObjectsFrom(objectsStringsArr);
+};
+
+const loadData = async (callback) => {
+  const instance = await getInstanceFromFile();
+  const stringifyData = instance.getFullText();
+  callback(stringifyData);
+};
+
+export {
+  stringifyDataFromArray,
+  createArrayFromStringifyData,
+  generateDocument,
+  getInstanceFromFile,
+  createToursTemplate,
+  saveData,
+  loadData,
+};

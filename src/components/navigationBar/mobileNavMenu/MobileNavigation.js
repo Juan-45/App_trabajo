@@ -1,13 +1,13 @@
 import { Tooltip } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Settings from "@mui/icons-material/Settings";
-import Logout from "@mui/icons-material/Logout";
+/*import Settings from "@mui/icons-material/Settings";
+import Logout from "@mui/icons-material/Logout";*/
 import MobileButton from "components/MobileButton";
 import CustomMenu from "./mobileNavigation/CustomMenu";
 import CustomMenuItem from "./mobileNavigation/CustomMenuItem";
 import useMenu from "hooks/useMenu";
 import useNavigation from "hooks/useNavigation";
-import useAccountSettings from "hooks/useAccountSettings";
+//import useAccountSettings from "hooks/useAccountSettings";
 
 const MobileNavigation = ({ navArguments, tooltipTitle }) => {
   const {
@@ -17,15 +17,15 @@ const MobileNavigation = ({ navArguments, tooltipTitle }) => {
     handleCloseMenu,
   } = useMenu();
 
-  const { logOffRequest, openSettingsHandler } = useAccountSettings({
+  /*const { logOffRequest, openSettingsHandler } = useAccountSettings({
     setElementPosition,
-  });
+  });*/
 
   const { getOnClickHandler } = useNavigation({
     callback: () => setElementPosition(false),
   });
 
-  const settingsArguments = [
+  /*const settingsArguments = [
     {
       isSetting: true,
       label: "Opciones",
@@ -38,7 +38,7 @@ const MobileNavigation = ({ navArguments, tooltipTitle }) => {
       iconComponent: <Logout fontSize='small' />,
       onClick: logOffRequest,
     },
-  ];
+  ];*/
 
   return (
     <>
@@ -53,7 +53,7 @@ const MobileNavigation = ({ navArguments, tooltipTitle }) => {
         open={Boolean(elementPosition)}
         onClose={handleCloseMenu}
       >
-        {[...navArguments, ...settingsArguments].map((item) =>
+        {[...navArguments /*...settingsArguments*/].map((item) =>
           item.isSetting ? (
             <CustomMenuItem
               onClick={item.onClick}

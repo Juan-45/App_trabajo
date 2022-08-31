@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Grid, Typography } from "@mui/material";
-import theme from "theme/theme";
+import theme from "theme";
 
 //It is to center navBar and to have AccountSettingsWrapper positioned to the right
 const EmptyContainer = () => (
