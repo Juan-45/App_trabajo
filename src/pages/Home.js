@@ -43,6 +43,8 @@ const Home = () => {
   const [shouldReset, setShouldReset] = React.useState({
     prosecution: false,
     instructor: false,
+    selectedProsecution: false,
+    selectedInstructor: false,
   });
 
   const [prosecution, setProsecution] = React.useState({
@@ -59,10 +61,11 @@ const Home = () => {
 
   const getOnChangeHandler = React.useCallback(
     (name) => (value) => {
-      setShouldReset({
+      setShouldReset((prevState) => ({
+        ...prevState,
         prosecution: false,
         instructor: false,
-      });
+      }));
       if (name === "instructor" || name === "rank") {
         setInstructor((prevState) => ({
           ...prevState,
@@ -93,6 +96,10 @@ const Home = () => {
   );
 
   const currentInstructorOnChange = (value) => {
+    /*setShouldReset((prevState) => ({
+      ...prevState,
+      selectedInstructor: false,
+    }));*/
     setContextState((prevState) => ({
       ...prevState,
       currentInstructor: { instructor: value.label, rank: value.adjunct },
@@ -103,20 +110,25 @@ const Home = () => {
     }));
   };
 
-  const currentProsecutionOnChange = (value) =>
+  const currentProsecutionOnChange = (value) => {
+    setShouldReset((prevState) => ({
+      ...prevState,
+      selectedProsecution: false,
+    }));
     setComboBoxSelectionsId((prevState) => ({
       ...prevState,
       prosecutions: { selectionId: value.id },
     }));
+  };
 
   const addNewId = () => uuid();
 
   const addInstructor = (instructor) => {
     if (allPropertiesValuesAreValid(instructor)) {
-      setShouldReset({
-        prosecution: false,
+      setShouldReset((prevState) => ({
+        ...prevState,
         instructor: true,
-      });
+      }));
       setContextState((prevState) => {
         const currentArr = removeDefaultItemFrom([...prevState.instructors]);
 
@@ -136,10 +148,10 @@ const Home = () => {
 
   const addProsecution = (prosecution) => {
     if (allPropertiesValuesAreValid(prosecution)) {
-      setShouldReset({
+      setShouldReset((prevState) => ({
+        ...prevState,
         prosecution: true,
-        instructor: false,
-      });
+      }));
       setContextState((prevState) => {
         const currentArr = [...prevState.prosecutions];
 
@@ -158,13 +170,31 @@ const Home = () => {
   };
 
   const getRemoveHandlerFor = (name) => (id) => {
+    const shouldResetSelectedInstructor = {
+      selectedInstructor: true,
+    };
+
+    const shouldResetSelectedProsecution = {
+      selectedProsecution: true,
+    };
+
+    const comboBoxToReset =
+      name === "instructors"
+        ? shouldResetSelectedInstructor
+        : shouldResetSelectedProsecution;
+
+    setShouldReset((prevState) => ({
+      ...prevState,
+      ...comboBoxToReset,
+    }));
+
     setContextState((prevState) => ({
       ...prevState,
       [name]: prevState[name].filter((obj) => obj.id !== id),
     }));
     setComboBoxSelectionsId((prevState) => ({
       ...prevState,
-      [name]: { selectionId: null },
+      [name]: { selectionId: "" },
     }));
   };
 
@@ -187,42 +217,55 @@ const Home = () => {
       <CustomPaper>
         <PageTitle>Agregar instructor.</PageTitle>
         <Input
-          label="Instructor"
+          label='Instructor'
           onChange={instructorNameOnChange}
           shouldReset={shouldReset.instructor}
-          placeholder="Masciotta Marcela"
+          placeholder='Masciotta Marcela'
         />
         <Input
-          label="Jerarquía"
+          label='Jerarquía'
           onChange={instructorRankOnChange}
           shouldReset={shouldReset.instructor}
-          placeholder="Subcomisario"
+          placeholder='Subcomisario'
         />
         <Button onClick={() => addInstructor(instructor)}>Agregar</Button>
       </CustomPaper>
       <CustomPaper>
         <PageTitle>Agregar fiscalía.</PageTitle>
         <Input
-          label="Fiscalía"
+          label='Fiscalía'
           onChange={prosecutionOnChange}
           shouldReset={shouldReset.prosecution}
-          placeholder="UFI Y J Nro. 1"
+          placeholder='UFI Y J Nro. 1'
         />
         <Input
-          label="Fiscal a/C"
+          label='Fiscal a/C'
           onChange={prosecutorOnChange}
           shouldReset={shouldReset.prosecution}
-          placeholder="Dr. Oldani"
+          placeholder='Dr. Oldani'
         />
         <Button onClick={() => addProsecution(prosecution)}>Agregar</Button>
       </CustomPaper>
       <CustomPaper>
         <PageTitle>Seleccionar instructor actual.</PageTitle>
         <ComboBox
-          label="Instructor"
+          label='Instructor'
           options={instructors}
           onChange={currentInstructorOnChange}
-          shouldReset={instructors.length === 0}
+          shouldReset={shouldReset.selectedInstructor}
+          defaultValueForParentState={{
+            label: "",
+            adjunct: "",
+            id: "",
+          }}
+          refreshShouldReset={React.useCallback(
+            () =>
+              setShouldReset((prevState) => ({
+                ...prevState,
+                selectedInstructor: false,
+              })),
+            []
+          )}
         />
         <Button
           onClick={() =>
@@ -235,10 +278,15 @@ const Home = () => {
       <CustomPaper>
         <PageTitle>Seleccionar fiscalía.</PageTitle>
         <ComboBox
-          label="Fiscalías"
+          label='Fiscalías'
           options={prosecutions}
           onChange={currentProsecutionOnChange}
-          shouldReset={prosecutions.length === 0}
+          shouldReset={shouldReset.selectedProsecution}
+          defaultValueForParentState={{
+            label: "",
+            adjunct: "",
+            id: "",
+          }}
         />
         <Button
           onClick={() =>

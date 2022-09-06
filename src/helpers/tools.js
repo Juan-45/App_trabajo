@@ -168,8 +168,16 @@ const stringifyDataFromArray = (array, propertyStr) => {
   const itinerateProperties = (obj, stringifyData) => {
     let currentStringifyData = stringifyData;
     for (const property in obj) {
+      const currentValue = obj[property];
+
+      const isEmptyString = currentValue === "";
+
+      const defaultValueForSaving = "default";
+
+      const valueToPass = isEmptyString ? defaultValueForSaving : currentValue;
+
       currentStringifyData =
-        currentStringifyData + `${property}:${obj[property]},`;
+        currentStringifyData + `${property}:${valueToPass},`;
     }
     return currentStringifyData;
   };
@@ -222,9 +230,14 @@ const createArrayFromStringifyData = (string, propertyStr) => {
     const object = {};
 
     propertiesAndValuesArray.forEach((str) => {
-      const property = str.split(":").filter(isNotEmptyString)[0];
-      const value = str.split(":").filter(isNotEmptyString)[1];
-      object[property] = value;
+      const propertyAndValuePairArr = str.split(":").filter(isNotEmptyString);
+      const property = propertyAndValuePairArr[0];
+      const value = propertyAndValuePairArr[1];
+
+      const isDefaultValue = value === "default";
+      const valueToPass = isDefaultValue ? "" : value;
+
+      object[property] = valueToPass;
     });
 
     return object;

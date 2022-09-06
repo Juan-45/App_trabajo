@@ -56,10 +56,16 @@ const Tours = () => {
   )}`;
 
   const getToursInForce = (oldData) =>
-    oldData.filter(
-      (obj) =>
-        !isDateOutdated(getDateObjFrom(obj.endingDate), currentDate.object)
-    );
+    oldData.filter((obj) => {
+      const isDefaultValue = obj.endingDate === "";
+
+      if (!isDefaultValue) {
+        return !isDateOutdated(
+          getDateObjFrom(obj.endingDate),
+          currentDate.object
+        );
+      } else return true;
+    });
 
   const [toursLocalState, setToursLocalState] = React.useState(
     getToursInForce(tours)
@@ -307,6 +313,11 @@ const Tours = () => {
           options={prosecutions}
           onChange={prosecutionOnChange}
           shouldReset={shouldReset}
+          defaultValueForParentState={{
+            label: "",
+            adjunct: "",
+            id: "",
+          }}
         />
         <Input
           label='Víctima'
