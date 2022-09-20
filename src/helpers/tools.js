@@ -165,41 +165,80 @@ const createToursTemplate = async (data, fileName) => {
 };
 
 const stringifyDataFromArray = (array, propertyStr) => {
-  const itinerateProperties = (obj, stringifyData) => {
+  const itinerateArray = (
+    arr,
+    objectSeparatorCharacter,
+    propertyValueSeparatorCharacter
+  ) => {
+    let stringifyData = "";
+
+    arr.forEach((obj) => {
+      stringifyData = stringifyData + objectSeparatorCharacter;
+
+      stringifyData = itinerateProperties(
+        obj,
+        stringifyData,
+        propertyValueSeparatorCharacter
+      );
+
+      stringifyData = stringifyData + objectSeparatorCharacter;
+    });
+    return stringifyData;
+  };
+
+  const itinerateProperties = (
+    obj,
+    stringifyData,
+    propertyValueSeparatorCharacter
+  ) => {
     let currentStringifyData = stringifyData;
+
+    const addToBaseString = (base, newString) => base + newString;
+
     for (const property in obj) {
       const currentValue = obj[property];
 
-      const isEmptyString = currentValue === "";
-
-      const defaultValueForSaving = "default";
-
-      const valueToPass = isEmptyString ? defaultValueForSaving : currentValue;
-
-      currentStringifyData =
-        currentStringifyData + `${property}:${valueToPass},`;
+      if (Array.isArray(currentValue)) {
+        if (currentValue.length !== 0) {
+          // "&" separator character for first nested array
+          // "." separator character for properties and values of objects of nested array
+          currentStringifyData = addToBaseString(
+            currentStringifyData,
+            `${property}:${itinerateArray(
+              currentValue,
+              "&",
+              "."
+            )}${propertyValueSeparatorCharacter}`
+          );
+        } else {
+          currentStringifyData = addToBaseString(
+            currentStringifyData,
+            `${property}:undefined${propertyValueSeparatorCharacter}`
+          );
+        }
+      } else {
+        currentStringifyData = addToBaseString(
+          currentStringifyData,
+          `${property}:${currentValue}${propertyValueSeparatorCharacter}`
+        );
+      }
     }
     return currentStringifyData;
   };
 
-  const itinerateObjectsIn = (array, propertyStr) => {
+  const stringify = (array, propertyStr) => {
     const closeStringWithPropertyName = (strBase, closingStr) =>
       strBase + closingStr + "#";
 
     if (array.length !== 0) {
-      let stringifyData = "";
+      let stringifyData = itinerateArray(array, "/", ",");
 
-      array.forEach((obj) => {
-        stringifyData = stringifyData + "/";
-        stringifyData = itinerateProperties(obj, stringifyData);
-        stringifyData = stringifyData + "/";
-      });
       stringifyData = closeStringWithPropertyName(stringifyData, propertyStr);
       return stringifyData;
-    }
+    } else return `undefined${propertyStr}#`;
   };
 
-  return itinerateObjectsIn(array, propertyStr);
+  return stringify(array, propertyStr);
 };
 
 const saveData = async (data, fileName) => {
@@ -214,45 +253,62 @@ const saveData = async (data, fileName) => {
 
 const createArrayFromStringifyData = (string, propertyStr) => {
   const mainDataArr = string.split("#").filter(isNotEmptyString);
-
   const currentEntity = mainDataArr.find(
     (str) => str.search(propertyStr) !== -1
   );
 
-  const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
+  const isLoeadedDataDefault = currentEntity === `undefined${propertyStr}#`;
 
-  objectsStringsArr.pop();
+  const getPropertiesAndValuesArrFrom = (
+    str,
+    propertyValueSeparatorCharacter
+  ) => str.split(propertyValueSeparatorCharacter).filter(isNotEmptyString);
 
-  const getPropertiesAndValuesArrFrom = (str) =>
-    str.split(",").filter(isNotEmptyString);
+  const getArrayOfObjectsFrom = (
+    objectsStringsArr,
+    propertyValueSeparatorCharacter
+  ) => {
+    const array = [];
+
+    objectsStringsArr.forEach((str) => {
+      array.push(
+        getObject(
+          getPropertiesAndValuesArrFrom(str, propertyValueSeparatorCharacter)
+        )
+      );
+    });
+    return array;
+  };
 
   const getObject = (propertiesAndValuesArray) => {
     const object = {};
 
     propertiesAndValuesArray.forEach((str) => {
-      const propertyAndValuePairArr = str.split(":").filter(isNotEmptyString);
-      const property = propertyAndValuePairArr[0];
-      const value = propertyAndValuePairArr[1];
+      const [property, ...rest] = str.split(":").filter(isNotEmptyString);
+      const value = rest.length > 1 ? rest.join(":") : rest[0];
 
-      const isDefaultValue = value === "default";
-      const valueToPass = isDefaultValue ? "" : value;
+      const isValueANestedArray = value[0] === "&";
 
-      object[property] = valueToPass;
+      if (isValueANestedArray) {
+        const objectsStringsArr = value.split("&").filter(isNotEmptyString);
+        object[property] = getArrayOfObjectsFrom(objectsStringsArr, ".");
+      } else if (value === "undefined") {
+        object[property] = [];
+      } else {
+        object[property] = value;
+      }
     });
 
     return object;
   };
 
-  const getArrayOfObjectsFrom = (objectsStringsArr) => {
-    const array = [];
+  if (!isLoeadedDataDefault) {
+    const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
 
-    objectsStringsArr.forEach((str) => {
-      array.push(getObject(getPropertiesAndValuesArrFrom(str)));
-    });
-    return array;
-  };
+    objectsStringsArr.pop();
 
-  return getArrayOfObjectsFrom(objectsStringsArr);
+    return getArrayOfObjectsFrom(objectsStringsArr, ",");
+  } else return [];
 };
 
 const loadData = async (callback) => {
@@ -260,6 +316,49 @@ const loadData = async (callback) => {
   const stringifyData = instance.getFullText();
   callback(stringifyData);
 };
+
+/*const testObj = {
+  testArr: [
+    {
+      testA: "testA",
+      testB: "testB",
+      testArr: [
+        {
+          nestedArrObjA: "nestedA",
+          nestedArrObjB: "nestedB",
+        },
+        {
+          nestedArrObjA2: "nestedA2",
+          nestedArrObjB2: "nestedB2",
+        },
+      ],
+      testArr2: [],
+    },
+    {
+      test1: "test1",
+      test2: "test2",
+      testArr: [
+        {
+          nestedArrObj1: "nested1",
+          nestedArrObj2: "nested2",
+        },
+      ],
+    },
+  ],
+};
+
+console.log(
+  "string resultante",
+  stringifyDataFromArray(testObj.testArr, "testArr")
+);
+
+console.log(
+  "objeto devuelto",
+  createArrayFromStringifyData(
+    stringifyDataFromArray(testObj.testArr, "testArr"),
+    "testArr"
+  )
+);*/
 
 export {
   stringifyDataFromArray,

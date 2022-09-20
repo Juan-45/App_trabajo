@@ -8,8 +8,8 @@ import {
 import MobileNavMenu from "./navigationBar/MobileNavMenu";
 import useNavigation from "hooks/useNavigation";
 
-const NavigationBar = ({ navArguments, loggedUserName }) => {
-  const { getOnClickHandler } = useNavigation();
+const NavigationBar = ({ navArguments, loggedUserName, refresh }) => {
+  const { getOnClickHandler } = useNavigation({ refresh });
 
   return (
     <Container>
@@ -26,7 +26,7 @@ const NavigationBar = ({ navArguments, loggedUserName }) => {
       </CustomButtonGroup>
       <MobileNavMenu
         navArguments={navArguments}
-        tooltipTitle="Clickear para navegar"
+        tooltipTitle='Clickear para navegar'
       />
       <AccountSettingsWrapper>
         <LoggedUser>{loggedUserName}</LoggedUser>

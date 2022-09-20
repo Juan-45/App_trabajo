@@ -1,6 +1,11 @@
 import React from "react";
 
-const UseInput = ({ onChange, initialValue = "", shouldReset }) => {
+const useInput = ({
+  onChange,
+  initialValue = "",
+  updatedValue,
+  shouldReset,
+}) => {
   const [value, setValue] = React.useState(initialValue);
 
   const handleOnChange = (event) => {
@@ -8,16 +13,24 @@ const UseInput = ({ onChange, initialValue = "", shouldReset }) => {
     onChange(event.target.value);
   };
 
-  React.useEffect(() => {
-    if (shouldReset) {
+  const resetInputValueIf = (condition) => {
+    if (condition) {
       setValue(initialValue);
-      onChange(initialValue);
     }
-  }, [shouldReset, initialValue, onChange]);
+  };
+
+  resetInputValueIf(shouldReset && value !== initialValue);
+
+  React.useEffect(() => {
+    if (updatedValue) {
+      setValue(updatedValue);
+    }
+  }, [updatedValue]);
+
   return {
     value,
     handleOnChange,
   };
 };
 
-export default UseInput;
+export default useInput;

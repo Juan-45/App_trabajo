@@ -25,8 +25,8 @@ const currentMonthString = getMonthString(currentDate);
 
 const currentYear = currentDate.getFullYear();
 
-const getDateAsString = (value) =>
-  `${value.getDate()} - ${value.getMonth() + 1} - ${value.getFullYear()}`;
+const getDateAsString = (date) =>
+  `${date.getDate()} - ${date.getMonth() + 1} - ${date.getFullYear()}`;
 
 const dateIsValid = (date) => date instanceof Date && !isNaN(date);
 

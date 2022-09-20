@@ -3,30 +3,19 @@ import React from "react";
 const useComboBox = ({
   onChange,
   shouldReset,
-  options,
-  valueId,
+  initialValue = null,
+  updatedValue,
   defaultValueForParentState,
-  //refreshShouldReset is a callback to switch to false the shouldReset prop after the input value is reseted, use React.useCallback for this prop
-  refreshShouldReset,
 }) => {
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState(initialValue);
 
   const resetInputValueIf = (condition) => {
     if (condition) {
-      setValue(null);
+      setValue(initialValue);
     }
   };
 
-  const runRefreshShouldResetIf = React.useCallback(
-    (condition) => {
-      if (condition) {
-        refreshShouldReset();
-      }
-    },
-    [refreshShouldReset]
-  );
-
-  resetInputValueIf(shouldReset && value !== null);
+  resetInputValueIf(shouldReset && value !== initialValue);
 
   const comboBoxHandler = (event, newValue, reason) => {
     //newValue is the whole selected option, is the entire object
@@ -42,15 +31,11 @@ const useComboBox = ({
   };
 
   React.useEffect(() => {
-    runRefreshShouldResetIf(shouldReset && value === null);
-  }, [runRefreshShouldResetIf, shouldReset, value]);
-  React.useEffect(() => {
-    if (valueId) {
-      const match = options.find((obj) => obj.id === valueId);
-      setValue(match);
-      onChange(match);
+    if (updatedValue) {
+      setValue(updatedValue);
     }
-  }, [valueId, options, onChange]);
+  }, [updatedValue]);
+
   return {
     comboBoxHandler,
     value,

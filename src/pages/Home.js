@@ -5,7 +5,7 @@ import useDebounceHandler from "hooks/useDebounceHandler";
 import useSave from "hooks/useSave";
 import useLoad from "hooks/useLoad";
 import {
-  removeDefaultItemFrom,
+  //removeDefaultItemFrom,
   allPropertiesValuesAreValid,
 } from "helpers/helperFunctions";
 
@@ -37,7 +37,7 @@ const Home = () => {
 
   const { loadAppData } = useLoad();
 
-  const { instructors, prosecutions, setContextState } =
+  const { instructors, prosecutions, currentInstructor, setContextState } =
     React.useContext(Context);
 
   const [shouldReset, setShouldReset] = React.useState({
@@ -47,15 +47,19 @@ const Home = () => {
     selectedInstructor: false,
   });
 
-  const [prosecution, setProsecution] = React.useState({
+  const prosecutionDefault = {
     prosecution: "",
     prosecutor: "",
-  });
+  };
 
-  const [instructor, setInstructor] = React.useState({
+  const instructorDefault = {
     instructor: "",
     rank: "",
-  });
+  };
+
+  const [prosecution, setProsecution] = React.useState(prosecutionDefault);
+
+  const [instructor, setInstructor] = React.useState(instructorDefault);
 
   const [comboBoxSelectionsId, setComboBoxSelectionsId] = React.useState();
 
@@ -96,13 +100,13 @@ const Home = () => {
   );
 
   const currentInstructorOnChange = (value) => {
-    /*setShouldReset((prevState) => ({
+    setShouldReset((prevState) => ({
       ...prevState,
       selectedInstructor: false,
-    }));*/
+    }));
     setContextState((prevState) => ({
       ...prevState,
-      currentInstructor: { instructor: value.label, rank: value.adjunct },
+      currentInstructor: value,
     }));
     setComboBoxSelectionsId((prevState) => ({
       ...prevState,
@@ -130,7 +134,7 @@ const Home = () => {
         instructor: true,
       }));
       setContextState((prevState) => {
-        const currentArr = removeDefaultItemFrom([...prevState.instructors]);
+        const currentArr = []; //removeDefaultItemFrom([...prevState.instructors]);
 
         currentArr.push({
           label: instructor.instructor,
@@ -143,6 +147,7 @@ const Home = () => {
           instructors: currentArr,
         };
       });
+      setInstructor(instructorDefault);
     }
   };
 
@@ -166,6 +171,7 @@ const Home = () => {
           prosecutions: currentArr,
         };
       });
+      setProsecution(prosecutionDefault);
     }
   };
 
@@ -201,16 +207,6 @@ const Home = () => {
   const removeInstructor = getRemoveHandlerFor("instructors");
 
   const removeProsecution = getRemoveHandlerFor("prosecutions");
-
-  /*(currentProsecutionId) => {
-    setContextState((prevState) => ({
-      ...prevState,
-      prosecutions: prevState.prosecutions.filter(
-        (prosecutionObj) => prosecutionObj.id !== currentProsecutionId
-      ),
-    }));
-    setCurrentProsecutionId(null);
-  };*/
 
   return (
     <PageWrapper>
@@ -258,14 +254,7 @@ const Home = () => {
             adjunct: "",
             id: "",
           }}
-          refreshShouldReset={React.useCallback(
-            () =>
-              setShouldReset((prevState) => ({
-                ...prevState,
-                selectedInstructor: false,
-              })),
-            []
-          )}
+          initialValue={currentInstructor}
         />
         <Button
           onClick={() =>
@@ -276,7 +265,7 @@ const Home = () => {
         </Button>
       </CustomPaper>
       <CustomPaper>
-        <PageTitle>Seleccionar fiscalía.</PageTitle>
+        <PageTitle>Seleccionar fiscalía a eliminar.</PageTitle>
         <ComboBox
           label='Fiscalías'
           options={prosecutions}

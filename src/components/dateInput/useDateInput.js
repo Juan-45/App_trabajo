@@ -4,6 +4,7 @@ const useDateInput = ({ onChange, initialValue = null, shouldReset }) => {
   const [value, setValue] = React.useState(null);
 
   const handleOnChange = (newValue) => {
+    console.log("Date", newValue);
     setValue(newValue);
     onChange(newValue);
   };

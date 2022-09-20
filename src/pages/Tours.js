@@ -34,9 +34,16 @@ const Tours = () => {
     setContextState,
   } = React.useContext(Context);
 
+  if (!currentInstructor) {
+    console.log(
+      "ATENCIÓN: NO HAY UN INSTRUCTOR EN TURNO SELECCIONADO - currentInstructor:",
+      currentInstructor
+    );
+  }
+
   const { saveAppData, appDataAsString } = useSave();
 
-  const [formValues, setFormValues] = React.useState({
+  const formValuesDefault = {
     frequency: "",
     day: currentDate.day,
     month: currentDate.month,
@@ -49,9 +56,13 @@ const Tours = () => {
     address: "",
     phone: "",
     endingDate: "",
-  });
+  };
 
-  const toursTemplateFileName = `Recorridas --- ${getDateAsString(
+  const [formValues, setFormValues] = React.useState(formValuesDefault);
+
+  const toursFileName = `Recorridas --- ${getDateAsString(currentDate.object)}`;
+
+  const toursSendingNotesFileName = `Elevación-Recorridas --- ${getDateAsString(
     currentDate.object
   )}`;
 
@@ -112,7 +123,7 @@ const Tours = () => {
 
   const addTour = (newTour) => {
     const newTourIsValid = (newTour) =>
-      !isNaN(newTour.frequency) &&
+      !isNaN(parseInt(newTour.frequency)) &&
       isNotEmptyString(newTour.prosecution) &&
       isNotEmptyString(newTour.felony) &&
       isNotEmptyString(newTour.victim) &&
@@ -126,6 +137,7 @@ const Tours = () => {
         ...prevState,
         { ...newTour, id: addNewId() },
       ]);
+      setFormValues(formValuesDefault);
       setShouldReset(true);
     }
   };
@@ -203,6 +215,10 @@ const Tours = () => {
   const deleteTour = (id) => () => {
     const updateState = (stateArr) => stateArr.filter((obj) => obj.id !== id);
     setToursLocalState(updateState);
+    setContextState((prevState) => ({
+      ...prevState,
+      tours: updateState(prevState.tours),
+    }));
     setElementPosition(null);
   };
 
@@ -230,10 +246,7 @@ const Tours = () => {
       return templateData;
     };
 
-    createToursTemplate(
-      createDataForToursTemplate(tours),
-      toursTemplateFileName
-    );
+    createToursTemplate(createDataForToursTemplate(tours), toursFileName);
   };
 
   const generateToursSendingNotesDocument = (tours) => {
@@ -255,8 +268,8 @@ const Tours = () => {
         day: tour.day,
         month: tour.month,
         year: tour.year,
-        instructor: currentInstructor.instructor,
-        rank: currentInstructor.rank,
+        instructor: currentInstructor.label,
+        rank: currentInstructor.adjunct,
       });
 
       tours.forEach((tour) => {
@@ -268,14 +281,14 @@ const Tours = () => {
 
     createToursTemplate(
       createDataForToursSendingNotesTemplate(tours),
-      toursTemplateFileName
+      toursSendingNotesFileName
     );
   };
 
   const saveButtonHandler = () => {
     saveAppData({
       ...appDataAsString,
-      tours: stringifyDataFromArray(toursLocalState),
+      tours: stringifyDataFromArray(toursLocalState, "tours"),
     });
     setContextState((prevState) => ({ ...prevState, tours: toursLocalState }));
   };
@@ -349,7 +362,7 @@ const Tours = () => {
         headCells={headCells}
         cellsAmount={4}
         rows={rows}
-        shouldListResults={rows[0].id !== "default"}
+        shouldListResults={rows.length !== 0}
         rowTooltipTitle='Clickear para ver opciones'
         rowOnClickHandler={rowOnClickHandler}
         rowMenuComponent={
@@ -358,7 +371,7 @@ const Tours = () => {
             handleCloseMenu={handleCloseMenu}
           >
             <MenuItem onClick={deleteTour(currentTourId)}>
-              Borrar factura
+              Borrar recorrida
             </MenuItem>
           </RowMenu>
         }

@@ -1,10 +1,17 @@
 import { TextField, Grid } from "@mui/material";
 import useInput from "hooks/useInput";
 
-const Input = ({ onChange, initialValue, shouldReset, ...props }) => {
+const Input = ({
+  onChange,
+  initialValue,
+  updatedValue,
+  shouldReset,
+  ...props
+}) => {
   const { value, handleOnChange } = useInput({
     onChange,
     initialValue,
+    updatedValue,
     shouldReset,
   });
 

@@ -13,6 +13,8 @@ import {
 import NavigationBar from "components/NavigationBar";
 import Home from "pages/Home";
 import Tours from "pages/Tours";
+import Felonies from "pages/Felonies";
+import { v4 as uuid } from "uuid";
 
 const App = () => {
   const navArguments = [
@@ -25,6 +27,11 @@ const App = () => {
       name: "tours",
       path: "/tours",
       label: "Recorridas",
+    },
+    {
+      name: "felonies",
+      path: "/felonies",
+      label: "Hechos",
     },
   ];
 
@@ -40,7 +47,7 @@ const App = () => {
       policeStation: "Seccional Comando Patrulla Pergamino",
     },
     tours: [
-      {
+      /* {
         frequency: "",
         day: "",
         month: "",
@@ -53,20 +60,26 @@ const App = () => {
         address: "",
         phone: "",
         endingDate: "",
-        id: "default",
-      },
+        id: "",
+      },*/
     ],
     instructors: [
       /*{ label: "No hay datos", adjunct: "default", id: "default" }*/
     ],
-    currentInstructor: { rank: "", instructor: "" },
+    currentInstructor: null, //{ rank: "", instructor: "" },
     prosecutions: [],
+    courts: [
+      { label: "Juzg. Gtias. Nro. 1", adjunct: "default", id: uuid() },
+      { label: "Juzg. Gtias. Nro. 2", adjunct: "default", id: uuid() },
+      { label: "Juzg. Gtias. Nro. 3", adjunct: "default", id: uuid() },
+    ],
+    felonies: [],
   });
 
   console.log("Context", contextState);
 
   return (
-    <div className="App">
+    <div className='App'>
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Context.Provider value={{ ...contextState, setContextState }}>
@@ -75,8 +88,9 @@ const App = () => {
               loggedUserName={"OSA Herrera Juan José"}
             />
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/tours" element={<Tours />} />
+              <Route path='/' element={<Home />} />
+              <Route path='/tours' element={<Tours />} />
+              <Route path='/felonies' element={<Felonies />} />
             </Routes>
           </Context.Provider>
         </BrowserRouter>

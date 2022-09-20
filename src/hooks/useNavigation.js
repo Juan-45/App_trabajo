@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-const useNavigation = () => {
+const useNavigation = ({ refresh }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -9,7 +9,9 @@ const useNavigation = () => {
     () => {
       if (location.pathname !== currentPath) {
         navigate(currentPath);
-      } else navigate(0);
+      } else if (refresh) {
+        navigate(0);
+      }
       callback();
     };
 

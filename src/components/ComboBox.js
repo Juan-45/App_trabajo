@@ -10,29 +10,24 @@ const ComboBox = ({
   required,
   name,
   options,
-  valueId,
+  initialValue,
+  updatedValue,
   defaultValueForParentState,
-  refreshShouldReset,
   ...props
 }) => {
   const { comboBoxHandler, value } = useComboBox({
     onChange,
     shouldReset,
-    options,
-    valueId,
+    initialValue,
+    updatedValue,
     defaultValueForParentState,
-    refreshShouldReset,
   });
 
   return (
     <Autocomplete
       value={value}
       onChange={comboBoxHandler}
-      isOptionEqualToValue={(option, value) => {
-        console.log("option", option);
-        console.log("value", value);
-        return option.id === value.id;
-      }}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       noOptionsText='No hay valor disponible'
       openOnFocus={true}
       renderOption={(props, option) => {
