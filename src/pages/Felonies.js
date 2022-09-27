@@ -87,34 +87,69 @@ const Felonies = () => {
 
   const [shouldReset, setShouldReset] = React.useState(false);
 
-  const addFelony = (newFelony) => {
-    const newFelonyIsValid = (newFelony) =>
-      isNotEmptyString(newFelony.felony) &&
-      isNotEmptyString(newFelony.ipp) &&
-      isNotEmptyString(newFelony.prosecution) &&
-      isNotEmptyString(newFelony.prosecutor) &&
-      isNotEmptyString(newFelony.court) &&
-      isNotEmptyString(newFelony.felonyLocation); /*&&
+  const addNewId = () => uuid();
+
+  const addNewItem = (prevState, property, newItem) => ({
+    ...prevState,
+    //property as string
+    [property]: [...prevState[property], { ...newItem, id: addNewId() }],
+  });
+
+  const modifyItem = (prevState, property, modifiedItem) => {
+    const matched = prevState[property].find(
+      (currentItem) => currentItem.id === modifiedItem.id
+    );
+
+    const updatedMatch = {
+      ...matched,
+      ...modifiedItem,
+    };
+
+    const updatedState = prevState[property].map((currentItem) => {
+      if (currentItem.id === modifiedItem.id) {
+        return updatedMatch;
+      } else return currentItem;
+    });
+
+    return {
+      ...prevState,
+      [property]: updatedState,
+    };
+  };
+
+  const submitFelony = (felony, modified) => {
+    const newFelonyIsValid = (felony) =>
+      isNotEmptyString(felony.felony) &&
+      isNotEmptyString(felony.ipp) &&
+      isNotEmptyString(felony.prosecution) &&
+      isNotEmptyString(felony.prosecutor) &&
+      isNotEmptyString(felony.court) &&
+      isNotEmptyString(felony.felonyLocation); /*&&
       newFelony.involved.length > 0;*/
 
-    const addNewId = () => uuid();
+    const addNewFelony = (prevState) =>
+      addNewItem(prevState, "felonies", felony);
 
-    if (newFelonyIsValid(newFelony)) {
-      console.log("newFelony", newFelony);
+    const modifyFelony = (prevState) =>
+      modifyItem(prevState, "felonies", felony);
 
-      setContextState((prevState) => ({
-        ...prevState,
-        felonies: [...prevState.felonies, { ...newFelony, id: addNewId() }],
-      }));
-      setCurrentFelony(felonyDefault);
-      setShouldReset(true);
+    if (newFelonyIsValid(felony)) {
+      if (modified) {
+        setContextState(modifyFelony);
+        setCurrentFelony(felony);
+      } else {
+        console.log("felony", felony);
+        setContextState(addNewFelony);
+        setCurrentFelony(felonyDefault);
+        setShouldReset(true);
+      }
     }
   };
 
   const currentFelonyTitle =
     currentFelony.felony !== "" ? currentFelony.felony : "No disponible";
 
-  const currentFelonyOnChange = (value) => {
+  const currentFelonyOnChange = (value, felonies) => {
     const selectedFelony = felonies.find((felony) => felony.id === value.id);
     if (selectedFelony) {
       setCurrentFelony(selectedFelony);
@@ -245,7 +280,7 @@ const Felonies = () => {
       <ComboBox
         label='Hechos'
         options={feloniesOptions}
-        onChange={currentFelonyOnChange}
+        onChange={(value) => currentFelonyOnChange(value, felonies)}
         defaultValueForParentState={{
           label: "",
           adjunct: "",
@@ -302,13 +337,7 @@ const Felonies = () => {
           placeholder='Garay nro 1200, Pergamino'
           updatedValue={currentFelony.felonyLocation}
         />
-        <Button
-          onClick={
-            felonyWasSelected
-              ? () => console.log("Modificar hecho")
-              : () => addFelony(currentFelony)
-          }
-        >
+        <Button onClick={() => submitFelony(currentFelony, felonyWasSelected)}>
           {felonyWasSelected ? "Modificar" : "Agregar"}
         </Button>
       </CustomPaper>
