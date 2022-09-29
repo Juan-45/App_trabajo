@@ -39,10 +39,27 @@ const Felonies = () => {
 
   const { saveAppData, appDataAsString } = useSave();
 
+  const addNewId = () => uuid();
+
   const getFeloniesOptions = (felonies) =>
     felonies.map((obj) => ({ label: obj.felony, id: obj.id }));
 
   const feloniesOptions = getFeloniesOptions(felonies);
+
+  const involvedTypes = [
+    {
+      label: "Víctima",
+      id: addNewId(),
+    },
+    {
+      label: "Testigo",
+      id: addNewId(),
+    },
+    {
+      label: "Imputado",
+      id: addNewId(),
+    },
+  ];
 
   const felonyDefault = {
     felony: "",
@@ -85,9 +102,9 @@ const Felonies = () => {
     id: "",
   });
 
-  const [shouldReset, setShouldReset] = React.useState(false);
+  const [felonyFormReset, setFelonyFormReset] = React.useState(false);
 
-  const addNewId = () => uuid();
+  const [involvedFormReset, setInvolvedFormReset] = React.useState(false);
 
   const addNewItem = (prevState, property, newItem) => ({
     ...prevState,
@@ -141,7 +158,8 @@ const Felonies = () => {
         console.log("felony", felony);
         setContextState(addNewFelony);
         setCurrentFelony(felonyDefault);
-        setShouldReset(true);
+        setFelonyFormReset(true);
+        setInvolvedFormReset(true);
       }
     }
   };
@@ -153,18 +171,18 @@ const Felonies = () => {
     const selectedFelony = felonies.find((felony) => felony.id === value.id);
     if (selectedFelony) {
       setCurrentFelony(selectedFelony);
-      setShouldReset(false);
+      setFelonyFormReset(false);
       setFelonyWasSelected(true);
     } else {
       setCurrentFelony(felonyDefault);
       setFelonyWasSelected(false);
-      setShouldReset(true);
+      setFelonyFormReset(true);
     }
   };
 
-  const getOnChangeHandler = React.useCallback(
+  const getFelonyOnChangeHandler = React.useCallback(
     (name) => (value) => {
-      setShouldReset(false);
+      setFelonyFormReset(false);
 
       if (name === "prosecution") {
         setCurrentFelony((prevState) => ({
@@ -191,16 +209,44 @@ const Felonies = () => {
     []
   );
 
-  const felonyOnChange = useDebounceHandler(getOnChangeHandler("felony"));
+  const getInvolvedOnChangeHandler = React.useCallback(
+    (name) => (value) => {
+      setInvolvedFormReset(false);
 
-  const ippOnChange = useDebounceHandler(getOnChangeHandler("ipp"));
+      setCurrentInvolved((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    []
+  );
 
-  const prosecutionOnChange = getOnChangeHandler("prosecution");
+  //Felony form onChange handlers
+  const felonyOnChange = useDebounceHandler(getFelonyOnChangeHandler("felony"));
 
-  const courtOnChange = getOnChangeHandler("court");
+  const ippOnChange = useDebounceHandler(getFelonyOnChangeHandler("ipp"));
+
+  const prosecutionOnChange = getFelonyOnChangeHandler("prosecution");
+
+  const courtOnChange = getFelonyOnChangeHandler("court");
 
   const felonyLocationOnChange = useDebounceHandler(
-    getOnChangeHandler("felonyLocation")
+    getFelonyOnChangeHandler("felonyLocation")
+  );
+
+  //Involved form onChange handlers
+  const typeOnChange = useDebounceHandler(getInvolvedOnChangeHandler("type"));
+
+  const fullnameOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("fullname")
+  );
+
+  const nationalityOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("nationality")
+  );
+
+  const educationOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("education")
   );
 
   /*  const generateToursDocument = (tours) => {
@@ -278,7 +324,7 @@ const Felonies = () => {
     <PageWrapper>
       <PageTitle>Hechos delictivos.</PageTitle>
       <ComboBox
-        label='Hechos'
+        label="Hechos"
         options={feloniesOptions}
         onChange={(value) => currentFelonyOnChange(value, felonies)}
         defaultValueForParentState={{
@@ -293,24 +339,24 @@ const Felonies = () => {
           {felonyWasSelected ? "Modificar hecho" : "Agregar hecho"}
         </PageTitle>
         <Input
-          label='Carátula'
+          label="Carátula"
           onChange={felonyOnChange}
-          shouldReset={shouldReset}
-          placeholder='Suarez Pedro S/ Amenazas'
+          shouldReset={felonyFormReset}
+          placeholder="Suarez Pedro S/ Amenazas"
           updatedValue={currentFelony.felony}
         />
         <Input
-          label='IPP Nro'
+          label="IPP Nro"
           onChange={ippOnChange}
-          shouldReset={shouldReset}
-          placeholder='4578-22'
+          shouldReset={felonyFormReset}
+          placeholder="4578-22"
           updatedValue={currentFelony.ipp}
         />
         <ComboBox
-          label='Fiscalía'
+          label="Fiscalía"
           options={prosecutions}
           onChange={prosecutionOnChange}
-          shouldReset={shouldReset}
+          shouldReset={felonyFormReset}
           defaultValueForParentState={{
             label: "",
             adjunct: "",
@@ -319,10 +365,10 @@ const Felonies = () => {
           updatedValue={currentFelony.prosecutionOption}
         />
         <ComboBox
-          label='Juzgado de garantías'
+          label="Juzgado de garantías"
           options={courts}
           onChange={courtOnChange}
-          shouldReset={shouldReset}
+          shouldReset={felonyFormReset}
           defaultValueForParentState={{
             label: "",
             adjunct: "",
@@ -331,12 +377,42 @@ const Felonies = () => {
           updatedValue={currentFelony.courtOption}
         />
         <Input
-          label='Lugar del hecho'
+          label="Lugar del hecho"
           onChange={felonyLocationOnChange}
-          shouldReset={shouldReset}
-          placeholder='Garay nro 1200, Pergamino'
+          shouldReset={felonyFormReset}
+          placeholder="Garay nro 1200, Pergamino"
           updatedValue={currentFelony.felonyLocation}
         />
+
+        <CustomPaper>
+          <PageTitle>Agregar involucrado</PageTitle>
+          <ComboBox
+            label="Tipo"
+            options={involvedTypes}
+            onChange={typeOnChange}
+            shouldReset={involvedFormReset}
+            defaultValueForParentState={{
+              label: "",
+              adjunct: "",
+              id: "",
+            }}
+            updatedValue={currentInvolved.type}
+          />
+          <Input
+            label="Carátula"
+            onChange={felonyOnChange}
+            shouldReset={involvedFormReset}
+            placeholder="Suarez Pedro S/ Amenazas"
+            updatedValue={currentFelony.felony}
+          />
+
+          <Button
+            onClick={() => submitFelony(currentFelony, felonyWasSelected)}
+          >
+            Agregar involucrado
+          </Button>
+        </CustomPaper>
+
         <Button onClick={() => submitFelony(currentFelony, felonyWasSelected)}>
           {felonyWasSelected ? "Modificar" : "Agregar"}
         </Button>
