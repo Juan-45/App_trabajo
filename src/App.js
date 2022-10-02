@@ -73,6 +73,100 @@ const App = () => {
       { label: "Juzg. Gtias. Nro. 2", adjunct: "default", id: uuid() },
       { label: "Juzg. Gtias. Nro. 3", adjunct: "default", id: uuid() },
     ],
+
+    involvedTypesOptions: [
+      {
+        label: "Víctima",
+        adjunct: "víctima",
+        id: uuid(),
+      },
+      {
+        label: "Testigo",
+        adjunct: "testigo",
+        id: uuid(),
+      },
+      {
+        label: "Imputado/a",
+        adjunct: "imputado/a",
+        id: uuid(),
+      },
+    ],
+    involvedGenderOptions: [
+      {
+        label: "Masculino",
+        adjunct: "masculino",
+        id: uuid(),
+      },
+      {
+        label: "Femenino",
+        adjunct: "femenina",
+        id: uuid(),
+      },
+    ],
+
+    involvedEducationOptions: [
+      {
+        label: "Sí",
+        adjunct: "sí",
+        id: uuid(),
+      },
+
+      {
+        label: "No",
+        adjunct: "no",
+        id: uuid(),
+      },
+    ],
+    involvedCivilStatusOptions: [
+      {
+        label: "Solero/a",
+        adjunct: "solero/a",
+        id: uuid(),
+      },
+      {
+        label: "Casado/a",
+        adjunct: "casado/a",
+        id: uuid(),
+      },
+      {
+        label: "Divorciado/a",
+        adjunct: "divorciad/a",
+        id: uuid(),
+      },
+      {
+        label: "Viudo/a",
+        adjunct: "viudo/a",
+        id: uuid(),
+      },
+    ],
+    involvedOccupationOptions: [
+      {
+        label: "Empleado/a",
+        adjunct: "empleado/a",
+        id: uuid(),
+      },
+      {
+        label: "Comerciante",
+        adjunct: "comerciante",
+        id: uuid(),
+      },
+      {
+        label: "Desempleado/a",
+        adjunct: "desempleado/a",
+        id: uuid(),
+      },
+      {
+        label: "Estudiante",
+        adjunct: "estudiante",
+        id: uuid(),
+      },
+      {
+        label: "Changarín",
+        adjunct: "changarín",
+        id: uuid(),
+      },
+    ],
+
     felonies: [],
   });
 
