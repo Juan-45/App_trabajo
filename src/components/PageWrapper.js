@@ -4,7 +4,6 @@ import { Box } from "@mui/material";
 const CustomBox = styled(Box)({
   display: "flex",
   flexWrap: "wrap",
-
   marginRight: "auto",
   marginLeft: "auto",
   marginTop: "50px",
