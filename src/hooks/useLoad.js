@@ -9,6 +9,7 @@ const useLoad = () => {
     instructors: createArrayFromStringifyData(str, "instructors"),
     prosecutions: createArrayFromStringifyData(str, "prosecutions"),
     tours: createArrayFromStringifyData(str, "tours"),
+    felonies: createArrayFromStringifyData(str, "felonies"),
   });
 
   const loadAppData = () =>

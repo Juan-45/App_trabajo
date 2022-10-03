@@ -4,7 +4,7 @@ import { saveData, stringifyDataFromArray } from "helpers/tools";
 import { getDateAsString } from "helpers/date";
 
 const useSave = () => {
-  const { instructors, prosecutions, tours, currentDate } =
+  const { instructors, prosecutions, tours, felonies, currentDate } =
     React.useContext(Context);
 
   const appDataFileName = `AppData---${getDateAsString(currentDate.object)}`;
@@ -12,9 +12,10 @@ const useSave = () => {
   const saveAppData = (data) => saveData(data, appDataFileName);
 
   const appDataAsString = {
-    tours: stringifyDataFromArray(tours, "tours"),
     prosecutions: stringifyDataFromArray(prosecutions, "prosecutions"),
     instructors: stringifyDataFromArray(instructors, "instructors"),
+    felonies: stringifyDataFromArray(felonies, "felonies"),
+    tours: stringifyDataFromArray(tours, "tours"),
   };
 
   return {

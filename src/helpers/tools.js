@@ -78,45 +78,6 @@ const downloadFileFromInstance = ({ templateInstance, fileName }) => {
   downloadFile(blob, fileName);
 };
 
-/*const generateItineratedDocument = (templateInstance, data, fileName) => {
-  templateInstance.render({
-    raw_loop_pagebreak: `<w:br w:type="page"/>`,
-    subTemplateLoop: [
-      {
-        frequency: "2",
-        day: "13",
-        month: "agosto",
-        year: "2022",
-        policeStation: "Seccional Comando Patrulla Pergamino",
-        prosecution: "UFI Y J Nro 4",
-        felony: "Pepe s/ lesiones leves",
-        victim: "María Antonieta",
-        address: "Magallanes 1254",
-        phone: "2477-15457896",
-      },
-      {
-        frequency: "2",
-        day: "13",
-        month: "agosto",
-        year: "2022",
-        policeStation: "Seccional Comando Patrulla Pergamino",
-        prosecution: "UFI Y J Nro 4",
-        felony: "Pepe s/ lesiones leves",
-        victim: "María Antonieta",
-        address: "Magallanes 1254",
-        phone: "2477-15457896",
-        raw_loop_pagebreak: "",
-      },
-    ],
-  });
-
-  downloadFileFromInstance({
-    templateInstance,
-    fileName//: "output.docx",
-  });
-  
-}; */
-
 const generateItineratedDocument = (templateInstance, data, fileName) => {
   const getDataWithPageBreakEnding = (data) => {
     const arrayWithoutLastItem = data.filter(
@@ -144,24 +105,25 @@ const generateItineratedDocument = (templateInstance, data, fileName) => {
   });
 };
 
-//Esta función la podría llamar usando .then() para luego de crear doc inmediatamente solicitar template para nota de elevacion y crear tb ese doc
-/*const createToursElevationNotes = async () => {
-
-  const instance = await getInstanceFromFile({
-    paragraphLoop: true,
-    linebreaks: true,
-  });
-
-
-
-}*/
-
 const createToursTemplate = async (data, fileName) => {
   const instance = await getInstanceFromFile({
     paragraphLoop: true,
     linebreaks: true,
   });
   generateItineratedDocument(instance, data, fileName);
+};
+
+const createTemplates = async (data, fileName) => {
+  const instance = await getInstanceFromFile({
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+  instance.render(data);
+
+  downloadFileFromInstance({
+    instance,
+    fileName,
+  });
 };
 
 const stringifyDataFromArray = (array, propertyStr) => {
@@ -219,7 +181,9 @@ const stringifyDataFromArray = (array, propertyStr) => {
       } else {
         currentStringifyData = addToBaseString(
           currentStringifyData,
-          `${property}:${currentValue}${propertyValueSeparatorCharacter}`
+          `${property}:${
+            currentValue !== "" ? currentValue : "emptyStr"
+          }${propertyValueSeparatorCharacter}`
         );
       }
     }
@@ -286,7 +250,7 @@ const createArrayFromStringifyData = (string, propertyStr) => {
     propertiesAndValuesArray.forEach((str) => {
       const [property, ...rest] = str.split(":").filter(isNotEmptyString);
       const value = rest.length > 1 ? rest.join(":") : rest[0];
-
+      console.log("value", value);
       const isValueANestedArray = value[0] === "&";
 
       if (isValueANestedArray) {
@@ -295,7 +259,7 @@ const createArrayFromStringifyData = (string, propertyStr) => {
       } else if (value === "undefined") {
         object[property] = [];
       } else {
-        object[property] = value;
+        object[property] = value !== "emptyStr" ? value : "";
       }
     });
 
@@ -303,6 +267,7 @@ const createArrayFromStringifyData = (string, propertyStr) => {
   };
 
   if (!isLoeadedDataDefault) {
+    console.log("currentEntity", currentEntity);
     const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
 
     objectsStringsArr.pop();
@@ -366,6 +331,7 @@ export {
   generateDocument,
   getInstanceFromFile,
   createToursTemplate,
+  createTemplates,
   saveData,
   loadData,
 };

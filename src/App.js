@@ -67,6 +67,7 @@ const App = () => {
       /*{ label: "No hay datos", adjunct: "default", id: "default" }*/
     ],
     currentInstructor: null, //{ rank: "", instructor: "" },
+    secretary: "OSA Herrera Juan José",
     prosecutions: [],
     courts: [
       { label: "Juzg. Gtias. Nro. 1", adjunct: "default", id: uuid() },
@@ -81,13 +82,23 @@ const App = () => {
         id: uuid(),
       },
       {
+        label: "Denunciante",
+        adjunct: "denunciante",
+        id: uuid(),
+      },
+      {
+        label: "Causante",
+        adjunct: "causante",
+        id: uuid(),
+      },
+      {
         label: "Testigo",
         adjunct: "testigo",
         id: uuid(),
       },
       {
-        label: "Imputado/a",
-        adjunct: "imputado/a",
+        label: "Imputado|a",
+        adjunct: "imputado|a",
         id: uuid(),
       },
     ],
@@ -104,7 +115,7 @@ const App = () => {
       },
     ],
 
-    involvedEducationOptions: [
+    /* involvedEducationOptions: [
       {
         label: "Sí",
         adjunct: "sí",
@@ -116,33 +127,33 @@ const App = () => {
         adjunct: "no",
         id: uuid(),
       },
-    ],
+    ],*/
     involvedCivilStatusOptions: [
       {
-        label: "Solero/a",
-        adjunct: "solero/a",
+        label: "Solero|a",
+        adjunct: "solero|a",
         id: uuid(),
       },
       {
-        label: "Casado/a",
-        adjunct: "casado/a",
+        label: "Casado|a",
+        adjunct: "casado|a",
         id: uuid(),
       },
       {
-        label: "Divorciado/a",
-        adjunct: "divorciad/a",
+        label: "Divorciado|a",
+        adjunct: "divorciad|a",
         id: uuid(),
       },
       {
-        label: "Viudo/a",
-        adjunct: "viudo/a",
+        label: "Viudo|a",
+        adjunct: "viudo|a",
         id: uuid(),
       },
     ],
     involvedOccupationOptions: [
       {
-        label: "Empleado/a",
-        adjunct: "empleado/a",
+        label: "Empleado|a",
+        adjunct: "empleado|a",
         id: uuid(),
       },
       {
@@ -151,8 +162,8 @@ const App = () => {
         id: uuid(),
       },
       {
-        label: "Desempleado/a",
-        adjunct: "desempleado/a",
+        label: "Desempleado|a",
+        adjunct: "desempleado|a",
         id: uuid(),
       },
       {
@@ -166,7 +177,50 @@ const App = () => {
         id: uuid(),
       },
     ],
-
+    involvedBinaryOptions: [
+      {
+        label: "Sí",
+        adjunct: "sí",
+        id: uuid(),
+      },
+      {
+        label: "No",
+        adjunct: "no",
+        id: uuid(),
+      },
+    ],
+    involvedVehicleTypeOptions: [
+      {
+        label: "Auto",
+        adjunct: "auto",
+        id: uuid(),
+      },
+      {
+        label: "Moto",
+        adjunct: "moto",
+        id: uuid(),
+      },
+      {
+        label: "Bicicleta",
+        adjunct: "bicicleta",
+        id: uuid(),
+      },
+      {
+        label: "Camioneta",
+        adjunct: "camioneta",
+        id: uuid(),
+      },
+      {
+        label: "Camión",
+        adjunct: "camión",
+        id: uuid(),
+      },
+      {
+        label: "Colectivo",
+        adjunct: "colectivo",
+        id: uuid(),
+      },
+    ],
     felonies: [],
   });
 

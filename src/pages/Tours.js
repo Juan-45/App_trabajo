@@ -133,10 +133,16 @@ const Tours = () => {
     const addNewId = () => uuid();
 
     if (newTourIsValid(newTour)) {
-      setToursLocalState((prevState) => [
+      const tourToAdd = {
+        ...newTour,
+        id: addNewId(),
+      };
+
+      setToursLocalState((prevState) => [...prevState, tourToAdd]);
+      setContextState((prevState) => ({
         ...prevState,
-        { ...newTour, id: addNewId() },
-      ]);
+        tours: [...prevState.tours, tourToAdd],
+      }));
       setFormValues(formValuesDefault);
       setShouldReset(true);
     }
@@ -285,13 +291,11 @@ const Tours = () => {
     );
   };
 
-  const saveButtonHandler = () => {
+  const saveButtonHandler = () =>
     saveAppData({
       ...appDataAsString,
       tours: stringifyDataFromArray(toursLocalState, "tours"),
     });
-    setContextState((prevState) => ({ ...prevState, tours: toursLocalState }));
-  };
 
   return (
     <PageWrapper>
