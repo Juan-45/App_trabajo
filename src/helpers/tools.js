@@ -63,9 +63,10 @@ const generateDocument = async (data) => {
 const getInstanceFromFile = async (instanceSettings) => {
   const file = await getFile();
   if (file.kind === "file") {
+    const fileName = file.name.split(".")[0];
     const arrayBuffer = await getArrayBuffer(file);
     const doc = getDocxTemplaterInstance(arrayBuffer, instanceSettings);
-    return doc;
+    return { instance: doc, fileName };
   }
 };
 
@@ -110,7 +111,7 @@ const createToursTemplate = async (data, fileName) => {
     paragraphLoop: true,
     linebreaks: true,
   });
-  generateItineratedDocument(instance, data, fileName);
+  generateItineratedDocument(instance.instance, data, fileName);
 };
 
 const createTemplates = async (data, fileName) => {
@@ -118,11 +119,11 @@ const createTemplates = async (data, fileName) => {
     paragraphLoop: true,
     linebreaks: true,
   });
-  instance.render(data);
+  instance.instance.render(data);
 
   downloadFileFromInstance({
-    instance,
-    fileName,
+    templateInstance: instance.instance,
+    fileName: `${instance.fileName} - ${fileName}`,
   });
 };
 
@@ -210,7 +211,7 @@ const saveData = async (data, fileName) => {
 
   instance.render(data);
   downloadFileFromInstance({
-    templateInstance: instance,
+    templateInstance: instance.instance,
     fileName,
   });
 };
@@ -278,7 +279,7 @@ const createArrayFromStringifyData = (string, propertyStr) => {
 
 const loadData = async (callback) => {
   const instance = await getInstanceFromFile();
-  const stringifyData = instance.getFullText();
+  const stringifyData = instance.instance.getFullText();
   callback(stringifyData);
 };
 
