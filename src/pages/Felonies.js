@@ -3,7 +3,7 @@ import Context from "../Context";
 import useDebounceHandler from "hooks/useDebounceHandler";
 import useSave from "hooks/useSave";
 import {
-  // getMonthString,
+  getMonthString,
   getDateAsString,
   // dateIsValid,
   // getDateObjFrom,
@@ -47,10 +47,10 @@ const Felonies = () => {
   const felonyDefault = {
     felony: "",
     ipp: "",
-    /* victims: "",
-    suspects: "",*/
     prosecution: "",
     prosecutor: "",
+    instructor: currentInstructor.label,
+    instructorRank: currentInstructor.adjunct,
     court: "",
     judge: "",
     day: currentDate.day,
@@ -470,83 +470,82 @@ const Felonies = () => {
     getInvolvedOnChangeHandler("chassisNo")
   );
 
+  const getCurrentInvolvedDataStr = (involved) => {
+    const getEducation = (education) =>
+      education === "sí" ? "instruido" : "no instruido";
+
+    let currentInvolvedDataStr = `${involved.fullName.toUpperCase()}, ${
+      involved.age
+    }, ${involved.birthDate}, DNI Nro. ${involved.dni}, ${
+      involved.nationality
+    }, ${getEducation(involved.education)}, ${involved.civilStatus}, ${
+      involved.occupation
+    }, ddo. ${involved.address}, Te nro. ${involved.phone}; `;
+
+    return currentInvolvedDataStr;
+  };
+
+  const getVictimsStr = (involved) => {
+    let victimsFullNameStr = "";
+    let victimsDataStr = "";
+    if (involved.length !== 0) {
+      involved.forEach((obj) => {
+        if (obj.type === "víctima") {
+          const currentVictimFullName = obj.fullName + " - ";
+
+          victimsFullNameStr = victimsFullNameStr + currentVictimFullName;
+          victimsDataStr = victimsDataStr + getCurrentInvolvedDataStr(obj);
+        }
+      });
+    }
+    return {
+      victimsFullNameStr,
+      victimsDataStr,
+    };
+  };
+
+  const getSuspectsStr = (involved) => {
+    let suspectsFullNamesStr = "";
+    let suspectsDataStr = "";
+    if (involved.length !== 0) {
+      involved.forEach((obj) => {
+        if (obj.type === "imputado|a") {
+          if (obj.isSuspectUnknown === "no") {
+            const currentSuspectFullName = obj.fullName + " - ";
+
+            suspectsFullNamesStr =
+              suspectsFullNamesStr + currentSuspectFullName;
+
+            suspectsDataStr = suspectsDataStr + getCurrentInvolvedDataStr(obj);
+          } else {
+            suspectsFullNamesStr = "NN o varios";
+            suspectsDataStr = "NN o Varios";
+          }
+        }
+      });
+    }
+    return {
+      suspectsFullNamesStr,
+      suspectsDataStr,
+    };
+  };
+
+  const getTypeDataStr = (involved, type) => {
+    let involvedFullNameStr = "";
+    let involvedDataStr = "";
+    if (involved.length !== 0) {
+      const match = involved.find((obj) => obj.type === type);
+      involvedFullNameStr = match ? match.fullName : "";
+      involvedDataStr = match ? getCurrentInvolvedDataStr(match) : "";
+    }
+    return {
+      involvedFullNameStr,
+      involvedDataStr,
+    };
+  };
+
   const generateBaseDocs = (felony) => {
     const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}`;
-
-    const getCurrentInvolvedDataStr = (involved) => {
-      const getEducation = (education) =>
-        education === "sí" ? "instruido" : "no instruido";
-
-      let currentInvolvedDataStr = `${involved.fullName.toUpperCase()}, ${
-        involved.age
-      }, ${involved.birthDate}, DNI Nro. ${involved.dni}, ${
-        involved.nationality
-      }, ${getEducation(involved.education)}, ${involved.civilStatus}, ${
-        involved.occupation
-      }, ddo. ${involved.address}, Te nro. ${involved.phone}; `;
-
-      return currentInvolvedDataStr;
-    };
-
-    const getVictimsStr = (involved) => {
-      let victimsFullNameStr = "";
-      let victimsDataStr = "";
-      if (involved.length !== 0) {
-        involved.forEach((obj) => {
-          if (obj.type === "víctima") {
-            const currentVictimFullName = obj.fullName + " ";
-
-            victimsFullNameStr = victimsFullNameStr + currentVictimFullName;
-            victimsDataStr = victimsDataStr + getCurrentInvolvedDataStr(obj);
-          }
-        });
-      }
-      return {
-        victimsFullNameStr,
-        victimsDataStr,
-      };
-    };
-
-    const getSuspectsStr = (involved) => {
-      let suspectsFullNamesStr = "";
-      let suspectsDataStr = "";
-      if (involved.length !== 0) {
-        involved.forEach((obj) => {
-          if (obj.type === "imputado|a") {
-            if (obj.isSuspectUnknown === "no") {
-              const currentSuspectFullName = obj.fullName + " ";
-
-              suspectsFullNamesStr =
-                suspectsFullNamesStr + currentSuspectFullName;
-
-              suspectsDataStr =
-                suspectsDataStr + getCurrentInvolvedDataStr(obj);
-            } else {
-              suspectsFullNamesStr = "NN o varios";
-              suspectsDataStr = "NN o Varios";
-            }
-          }
-        });
-      }
-      return {
-        suspectsFullNamesStr,
-        suspectsDataStr,
-      };
-    };
-
-    const getTypeDataStr = (involved, type) => {
-      let involvedFullNameStr = "";
-      let involvedDataStr = "";
-      if (involved.length !== 0) {
-        const match = involved.find((obj) => obj.type === type);
-        involvedFullNameStr = match ? match.fullName : "";
-        involvedDataStr = match ? getCurrentInvolvedDataStr(match) : "";
-      }
-      return {
-        involvedFullNameStr,
-        involvedDataStr,
-      };
-    };
 
     const getVehiclesDataStr = (involved, isWrongfulInjury) => {
       let vehiclesDataStr = "";
@@ -590,8 +589,8 @@ const Felonies = () => {
         .involvedDataStr,
       suspects: getSuspectsStr(felony.involved).suspectsFullNamesStr,
       suspectsDataStr: getSuspectsStr(felony.involved).suspectsDataStr,
-      instructor: currentInstructor.label,
-      instructorRank: currentInstructor.adjunct,
+      instructor: felony.instructor,
+      instructorRank: felony.instructorRank,
       court: felony.court,
       secretary,
       prosecution: felony.prosecution,
@@ -602,6 +601,49 @@ const Felonies = () => {
       vehiclesDataStr: getVehiclesDataStr(felony.involved, isWrongfulInjury),
     };
 
+    createTemplates(data, fileName);
+  };
+
+  const generateInvolvedTemplate = (felony, involved) => {
+    const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}`;
+
+    const data = {
+      cover: felony.felony,
+      ipp: felony.ipp,
+      court: felony.court,
+      secretary,
+      prosecution: felony.prosecution,
+      prosecutor: felony.prosecutor,
+      instructor: felony.instructor,
+      instructorRank: felony.instructorRank,
+      day: felony.day,
+      month: felony.month,
+      year: felony.year,
+      dateAsStr: felony.summaryAbbreviatedDateStr,
+      victims: getVictimsStr(felony.involved).victimsFullNameStr,
+      founder: getTypeDataStr(felony.involved, "causante").involvedFullNameStr,
+      informer: getTypeDataStr(felony.involved, "denunciante")
+        .involvedFullNameStr,
+      suspects: getSuspectsStr(felony.involved).suspectsFullNamesStr,
+      fullName: involved.fullName,
+      gender: involved.gender,
+      nationality: involved.nationality,
+      education: involved.education,
+      civilStatus: involved.civilStatus,
+      occupation: involved.occupation,
+      age: involved.age,
+      address: involved.address,
+      dni: involved.dni,
+      birthDate: involved.birthDate,
+      phone: involved.phone,
+      vehicleType: involved.vehicleType,
+      brand: involved.brand,
+      model: involved.model,
+      colour: involved.colour,
+      licensePlate: involved.licensePlate,
+      engineNo: involved.engineNo,
+      chassisNo: involved.chassisNo,
+    };
     createTemplates(data, fileName);
   };
 
@@ -621,7 +663,7 @@ const Felonies = () => {
     <PageWrapper>
       <PageTitle>Hechos delictivos.</PageTitle>
       <ComboBox
-        label="Hechos"
+        label='Hechos'
         options={feloniesOptions}
         shouldReset={felonyFormReset}
         onChange={(value) => currentFelonyOnChange(value, felonies)}
@@ -634,21 +676,21 @@ const Felonies = () => {
       <CustomPaper>
         <PageTitle>{currentFelonyTitle}</PageTitle>
         <Input
-          label="Carátula"
+          label='Carátula'
           onChange={felonyOnChange}
           shouldReset={felonyFormReset}
-          placeholder="Suarez Pedro S/ Amenazas"
+          placeholder='Suarez Pedro S/ Amenazas'
           updatedValue={currentFelony.felony}
         />
         <Input
-          label="IPP Nro"
+          label='IPP Nro'
           onChange={ippOnChange}
           shouldReset={felonyFormReset}
-          placeholder="4578-22"
+          placeholder='4578-22'
           updatedValue={currentFelony.ipp}
         />
         <ComboBox
-          label="Fiscalía"
+          label='Fiscalía'
           options={prosecutions}
           onChange={prosecutionOnChange}
           shouldReset={felonyFormReset}
@@ -663,7 +705,7 @@ const Felonies = () => {
           )}
         />
         <ComboBox
-          label="Juzgado de garantías"
+          label='Juzgado de garantías'
           options={courts}
           onChange={courtOnChange}
           shouldReset={felonyFormReset}
@@ -677,7 +719,7 @@ const Felonies = () => {
       </CustomPaper>
       <PageTitle display={felonyWasSelected}>Involucrados.</PageTitle>
       <ComboBox
-        label="Involucrados"
+        label='Involucrados'
         options={involvedOptions}
         onChange={(value) =>
           currentInvolvedOnChange(value, currentFelony.involved)
@@ -697,7 +739,7 @@ const Felonies = () => {
           {!isSuspectUnknown ? currentInvolvedTitle : "NN o varios"}
         </PageTitle>
         <ComboBox
-          label="Tipo"
+          label='Tipo'
           options={involvedTypesOptions}
           onChange={typeOnChange}
           shouldReset={involvedFormReset}
@@ -712,7 +754,7 @@ const Felonies = () => {
           )}
         />
         <ComboBox
-          label="Imputado NN o varios"
+          label='Imputado NN o varios'
           options={involvedBinaryOptions}
           onChange={isSuspectUnknownOnChange}
           shouldReset={involvedFormReset}
@@ -729,7 +771,7 @@ const Felonies = () => {
         />
         <Box sx={{ display: isSuspectUnknown ? "none" : "initial" }}>
           <ComboBox
-            label="Género"
+            label='Género'
             options={involvedGenderOptions}
             onChange={genderOnChange}
             shouldReset={involvedFormReset}
@@ -744,21 +786,21 @@ const Felonies = () => {
             )}
           />
           <Input
-            label="Apellido y Nombre"
+            label='Apellido y Nombre'
             onChange={fullnameOnChange}
             shouldReset={involvedFormReset}
-            placeholder="Suarez Pedro"
+            placeholder='Suarez Pedro'
             updatedValue={currentInvolved.fullName}
           />
           <Input
-            label="Nacionalidad"
+            label='Nacionalidad'
             onChange={nationalityOnChange}
             shouldReset={involvedFormReset}
-            placeholder="argentina"
+            placeholder='argentina'
             updatedValue={currentInvolved.nationality}
           />
           <ComboBox
-            label="Instrucción"
+            label='Instrucción'
             options={involvedBinaryOptions}
             onChange={educationOnChange}
             shouldReset={involvedFormReset}
@@ -773,7 +815,7 @@ const Felonies = () => {
             )}
           />
           <ComboBox
-            label="Estado civil"
+            label='Estado civil'
             options={involvedCivilStatusOptions}
             onChange={civilStatusOnChange}
             shouldReset={involvedFormReset}
@@ -788,7 +830,7 @@ const Felonies = () => {
             )}
           />
           <ComboBox
-            label="Ocupación"
+            label='Ocupación'
             options={involvedOccupationOptions}
             onChange={occupationOnChange}
             shouldReset={involvedFormReset}
@@ -803,42 +845,42 @@ const Felonies = () => {
             )}
           />
           <Input
-            label="Edad"
+            label='Edad'
             onChange={ageOnChange}
             shouldReset={involvedFormReset}
-            placeholder="18"
+            placeholder='18'
             updatedValue={currentInvolved.age}
           />
           <Input
-            label="Fecha de nacimiento"
+            label='Fecha de nacimiento'
             onChange={birthDateOnChange}
             shouldReset={involvedFormReset}
-            placeholder="18/02/1991"
+            placeholder='18/02/1991'
             updatedValue={currentInvolved.birthDate}
           />
           <Input
-            label="DNI"
+            label='DNI'
             onChange={dniOnChange}
             shouldReset={involvedFormReset}
-            placeholder="36857452"
+            placeholder='36857452'
             updatedValue={currentInvolved.dni}
           />
           <Input
-            label="Domicilio"
+            label='Domicilio'
             onChange={addressOnChange}
             shouldReset={involvedFormReset}
-            placeholder="Estrada nro. 850 de Pergamino"
+            placeholder='Estrada nro. 850 de Pergamino'
             updatedValue={currentInvolved.address}
           />
           <Input
-            label="Teléfono"
+            label='Teléfono'
             onChange={phoneOnChange}
             shouldReset={involvedFormReset}
-            placeholder="2477-578968"
+            placeholder='2477-578968'
             updatedValue={currentInvolved.phone}
           />
           <ComboBox
-            label="Conductor"
+            label='Conductor'
             options={involvedBinaryOptions}
             onChange={driverOnChange}
             shouldReset={involvedFormReset}
@@ -861,7 +903,7 @@ const Felonies = () => {
             }}
           >
             <ComboBox
-              label="Tipo de vehículo"
+              label='Tipo de vehículo'
               options={involvedVehicleTypeOptions}
               onChange={vehicleTypeOnChange}
               shouldReset={involvedFormReset}
@@ -876,52 +918,52 @@ const Felonies = () => {
               )}
             />
             <Input
-              label="Marca"
+              label='Marca'
               onChange={brandOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Renault"
+              placeholder='Renault'
               updatedValue={currentInvolved.brand}
             />
             <Input
-              label="Modelo"
+              label='Modelo'
               onChange={modelOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Clio"
+              placeholder='Clio'
               updatedValue={currentInvolved.model}
             />
             <Input
-              label="Color"
+              label='Color'
               onChange={colourOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Rojo"
+              placeholder='Rojo'
               updatedValue={currentInvolved.colour}
             />
             <Input
-              label="Dominio"
+              label='Dominio'
               onChange={licensePlateOnChange}
               shouldReset={involvedFormReset}
-              placeholder="ADF-321"
+              placeholder='ADF-321'
               updatedValue={currentInvolved.licensePlate}
             />
             <Input
-              label="Motor Nro."
+              label='Motor Nro.'
               onChange={engineNoOnChange}
               shouldReset={involvedFormReset}
-              placeholder="FSDF45FSDF56S"
+              placeholder='FSDF45FSDF56S'
               updatedValue={currentInvolved.engineNo}
             />
             <Input
-              label="Chasis/cuadro Nro."
+              label='Chasis/cuadro Nro.'
               onChange={chassisNoOnChange}
               shouldReset={involvedFormReset}
-              placeholder="FSDF45FSDF56S"
+              placeholder='FSDF45FSDF56S'
               updatedValue={currentInvolved.chassisNo}
             />
           </Box>
         </Box>
       </CustomPaper>
       <CustomPaper>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button
             onClick={() => submitFelony(currentFelony, felonyWasSelected)}
             sx={{ mr: "25px" }}
@@ -941,7 +983,7 @@ const Felonies = () => {
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button onClick={resetForNewFelonyAddition} sx={{ mr: "25px" }}>
             Agregar otro hecho
           </Button>
@@ -956,7 +998,7 @@ const Felonies = () => {
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button
             onClick={() => generateBaseDocs(currentFelony)}
             sx={{ mr: "25px" }}
@@ -964,17 +1006,19 @@ const Felonies = () => {
             Generar documentos base
           </Button>
           <Button
-            onClick={() => console.log("GENERAR DOCS INVOLUCRADOS")}
+            onClick={() =>
+              generateInvolvedTemplate(currentFelony, currentInvolved)
+            }
             sx={{
               display: involvedWasSelected ? "initial" : "none",
             }}
           >
-            Generar documentos involucrado
+            Generar WORD - involucrado
           </Button>
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button onClick={saveButtonHandler} sx={{ mr: "25px" }}>
             Guardar datos
           </Button>

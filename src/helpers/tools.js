@@ -70,11 +70,14 @@ const getInstanceFromFile = async (instanceSettings) => {
   }
 };
 
-const downloadFileFromInstance = ({ templateInstance, fileName }) => {
+const downloadFileFromInstance = ({
+  templateInstance,
+  fileName,
+  mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}) => {
   const blob = getBlob(templateInstance, {
     type: "blob",
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    mimeType,
   });
   downloadFile(blob, fileName);
 };
@@ -114,7 +117,7 @@ const createToursTemplate = async (data, fileName) => {
   generateItineratedDocument(instance.instance, data, fileName);
 };
 
-const createTemplates = async (data, fileName) => {
+const createTemplates = async (data, fileName, mimeType) => {
   const instance = await getInstanceFromFile({
     paragraphLoop: true,
     linebreaks: true,
@@ -124,6 +127,7 @@ const createTemplates = async (data, fileName) => {
   downloadFileFromInstance({
     templateInstance: instance.instance,
     fileName: `${instance.fileName} - ${fileName}`,
+    mimeType,
   });
 };
 
@@ -209,7 +213,7 @@ const stringifyDataFromArray = (array, propertyStr) => {
 const saveData = async (data, fileName) => {
   const instance = await getInstanceFromFile();
 
-  instance.render(data);
+  instance.instance.render(data);
   downloadFileFromInstance({
     templateInstance: instance.instance,
     fileName,
@@ -282,49 +286,6 @@ const loadData = async (callback) => {
   const stringifyData = instance.instance.getFullText();
   callback(stringifyData);
 };
-
-/*const testObj = {
-  testArr: [
-    {
-      testA: "testA",
-      testB: "testB",
-      testArr: [
-        {
-          nestedArrObjA: "nestedA",
-          nestedArrObjB: "nestedB",
-        },
-        {
-          nestedArrObjA2: "nestedA2",
-          nestedArrObjB2: "nestedB2",
-        },
-      ],
-      testArr2: [],
-    },
-    {
-      test1: "test1",
-      test2: "test2",
-      testArr: [
-        {
-          nestedArrObj1: "nested1",
-          nestedArrObj2: "nested2",
-        },
-      ],
-    },
-  ],
-};
-
-console.log(
-  "string resultante",
-  stringifyDataFromArray(testObj.testArr, "testArr")
-);
-
-console.log(
-  "objeto devuelto",
-  createArrayFromStringifyData(
-    stringifyDataFromArray(testObj.testArr, "testArr"),
-    "testArr"
-  )
-);*/
 
 export {
   stringifyDataFromArray,
