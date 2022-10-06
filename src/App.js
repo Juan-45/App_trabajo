@@ -114,20 +114,6 @@ const App = () => {
         id: uuid(),
       },
     ],
-
-    /* involvedEducationOptions: [
-      {
-        label: "Sí",
-        adjunct: "sí",
-        id: uuid(),
-      },
-
-      {
-        label: "No",
-        adjunct: "no",
-        id: uuid(),
-      },
-    ],*/
     involvedCivilStatusOptions: [
       {
         label: "Solero|a",

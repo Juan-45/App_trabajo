@@ -44,13 +44,16 @@ const Felonies = () => {
   const getOptions = (arr, property) =>
     arr.map((obj) => ({ label: obj[property], id: obj.id }));
 
+  const getCurrentInstructor = (property) =>
+    currentInstructor ? currentInstructor[property] : "";
+
   const felonyDefault = {
     felony: "",
     ipp: "",
     prosecution: "",
     prosecutor: "",
-    instructor: currentInstructor.label,
-    instructorRank: currentInstructor.adjunct,
+    instructor: getCurrentInstructor("value"),
+    instructorRank: getCurrentInstructor("adjunct"),
     court: "",
     judge: "",
     day: currentDate.day,
@@ -659,6 +662,14 @@ const Felonies = () => {
   const findAdjunctInOptions = (adjunct, options) =>
     options.find((item) => item.adjunct === adjunct);
 
+  const developmentDeleteFelonies = () => {
+    setContextState((prevState) => ({
+      ...prevState,
+      felonies: [],
+    }));
+    setCurrentFelony(felonyDefault);
+  };
+
   return (
     <PageWrapper>
       <PageTitle>Hechos delictivos.</PageTitle>
@@ -1017,10 +1028,18 @@ const Felonies = () => {
           </Button>
         </Grid>
       </CustomPaper>
-      <CustomPaper display={felonyWasSelected}>
+      <CustomPaper display={felonyWasSelected /*true developmentMode*/}>
         <Grid container justifyContent='space-between'>
           <Button onClick={saveButtonHandler} sx={{ mr: "25px" }}>
             Guardar datos
+          </Button>
+        </Grid>
+      </CustomPaper>
+
+      <CustomPaper display={true /*DEVELOPMENT MODE*/}>
+        <Grid container justifyContent='space-between'>
+          <Button onClick={developmentDeleteFelonies} sx={{ mr: "25px" }}>
+            Borrar datos: felony, felonies
           </Button>
         </Grid>
       </CustomPaper>
