@@ -52,7 +52,7 @@ const Felonies = () => {
     ipp: "",
     prosecution: "",
     prosecutor: "",
-    instructor: getCurrentInstructor("value"),
+    instructor: getCurrentInstructor("label"),
     instructorRank: getCurrentInstructor("adjunct"),
     court: "",
     judge: "",
