@@ -168,13 +168,13 @@ const stringifyDataFromArray = (array, propertyStr) => {
       if (Array.isArray(currentValue)) {
         if (currentValue.length !== 0) {
           // "&" separator character for first nested array
-          // "." separator character for properties and values of objects of nested array
+          // "~" separator character for properties and values of objects of nested array
           currentStringifyData = addToBaseString(
             currentStringifyData,
             `${property}:${itinerateArray(
               currentValue,
               "&",
-              "."
+              "~"
             )}${propertyValueSeparatorCharacter}`
           );
         } else {
@@ -198,9 +198,10 @@ const stringifyDataFromArray = (array, propertyStr) => {
   const stringify = (array, propertyStr) => {
     const closeStringWithPropertyName = (strBase, closingStr) =>
       strBase + closingStr + "#";
-
+    //"ª" separator for objects in no-nested array
+    //"¬" separator for properties-values pair in objects of no-nested array
     if (array.length !== 0) {
-      let stringifyData = itinerateArray(array, "/", ",");
+      let stringifyData = itinerateArray(array, "ª", "¬");
 
       stringifyData = closeStringWithPropertyName(stringifyData, propertyStr);
       return stringifyData;
@@ -251,16 +252,17 @@ const createArrayFromStringifyData = (string, propertyStr) => {
 
   const getObject = (propertiesAndValuesArray) => {
     const object = {};
-
+    console.log("propertiesAndValuesArray", propertiesAndValuesArray);
     propertiesAndValuesArray.forEach((str) => {
       const [property, ...rest] = str.split(":").filter(isNotEmptyString);
       const value = rest.length > 1 ? rest.join(":") : rest[0];
+      console.log("str", str);
       console.log("value", value);
       const isValueANestedArray = value[0] === "&";
 
       if (isValueANestedArray) {
         const objectsStringsArr = value.split("&").filter(isNotEmptyString);
-        object[property] = getArrayOfObjectsFrom(objectsStringsArr, ".");
+        object[property] = getArrayOfObjectsFrom(objectsStringsArr, "~");
       } else if (value === "undefined") {
         object[property] = [];
       } else {
@@ -273,11 +275,11 @@ const createArrayFromStringifyData = (string, propertyStr) => {
 
   if (!isLoeadedDataDefault) {
     console.log("currentEntity", currentEntity);
-    const objectsStringsArr = currentEntity.split("/").filter(isNotEmptyString);
+    const objectsStringsArr = currentEntity.split("ª").filter(isNotEmptyString);
 
     objectsStringsArr.pop();
 
-    return getArrayOfObjectsFrom(objectsStringsArr, ",");
+    return getArrayOfObjectsFrom(objectsStringsArr, "¬");
   } else return [];
 };
 
