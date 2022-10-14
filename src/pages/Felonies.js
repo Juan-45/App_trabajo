@@ -548,8 +548,8 @@ const Felonies = () => {
   };
 
   const generateBaseDocs = (felony) => {
-    const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}`;
-
+    const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}.docx`;
+    console.log("fileName pasado a createTemplate", fileName);
     const getVehiclesDataStr = (involved, isWrongfulInjury) => {
       let vehiclesDataStr = "";
 
@@ -608,7 +608,7 @@ const Felonies = () => {
   };
 
   const generateInvolvedTemplate = (felony, involved) => {
-    const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}`;
+    const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}.docx`;
 
     const data = {
       cover: felony.felony,

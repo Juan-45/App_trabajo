@@ -60,11 +60,13 @@ const Tours = () => {
 
   const [formValues, setFormValues] = React.useState(formValuesDefault);
 
-  const toursFileName = `Recorridas --- ${getDateAsString(currentDate.object)}`;
+  const toursFileName = `Recorridas --- ${getDateAsString(
+    currentDate.object
+  )}.docx`;
 
   const toursSendingNotesFileName = `Elevación-Recorridas --- ${getDateAsString(
     currentDate.object
-  )}`;
+  )}.docx`;
 
   const getToursInForce = (oldData) =>
     oldData.filter((obj) => {
@@ -302,31 +304,31 @@ const Tours = () => {
       <CustomPaper>
         <PageTitle>Agregar recorrida dinámica</PageTitle>
         <Input
-          label="Frecuencia (Hs.)"
+          label='Frecuencia (Hs.)'
           onChange={frequencyOnChange}
           shouldReset={shouldReset}
-          placeholder="2"
+          placeholder='2'
         />
         <DateInput
-          label="Fecha actual"
+          label='Fecha actual'
           onChange={dateOnChange}
           initialValue={currentDate.object}
           shouldReset={shouldReset}
         />
         <Input
-          label="Dependencia"
+          label='Dependencia'
           onChange={policeStationOnChange}
           shouldReset={shouldReset}
           initialValue={toursCommonData.policeStation}
         />
         <Input
-          label="Carátula"
+          label='Carátula'
           onChange={felonyOnChange}
           shouldReset={shouldReset}
-          placeholder="Pedro Sonia S/ Amenazas"
+          placeholder='Pedro Sonia S/ Amenazas'
         />
         <ComboBox
-          label="Fiscalía"
+          label='Fiscalía'
           options={prosecutions}
           onChange={prosecutionOnChange}
           shouldReset={shouldReset}
@@ -337,24 +339,24 @@ const Tours = () => {
           }}
         />
         <Input
-          label="Víctima"
+          label='Víctima'
           onChange={victimOnChange}
           shouldReset={shouldReset}
         />
         <Input
-          label="Domicilio"
+          label='Domicilio'
           onChange={addressOnChange}
           shouldReset={shouldReset}
-          placeholder="Don Bosco Nro. 432"
+          placeholder='Don Bosco Nro. 432'
         />
         <Input
-          label="Teléfono"
+          label='Teléfono'
           onChange={phoneOnChange}
           shouldReset={shouldReset}
-          placeholder="2477-15896325"
+          placeholder='2477-15896325'
         />
         <DateInput
-          label="Fecha de finalización"
+          label='Fecha de finalización'
           onChange={endingDateOnChange}
           shouldReset={shouldReset}
           minDate={currentDate.object}
@@ -367,7 +369,7 @@ const Tours = () => {
         cellsAmount={4}
         rows={rows}
         shouldListResults={rows.length !== 0}
-        rowTooltipTitle="Clickear para ver opciones"
+        rowTooltipTitle='Clickear para ver opciones'
         rowOnClickHandler={rowOnClickHandler}
         rowMenuComponent={
           <RowMenu
