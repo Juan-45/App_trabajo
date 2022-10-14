@@ -66,7 +66,7 @@ const Felonies = () => {
 
   const involvedDefault = {
     type: "",
-    isSuspectUnknown: "no",
+    isSuspectUnknown: "",
     gender: "",
     fullName: "",
     nationality: "",
@@ -775,7 +775,7 @@ const Felonies = () => {
             id: "",
           }}
           updatedValue={findAdjunctInOptions(
-            currentInvolved.type,
+            currentInvolved.isSuspectUnknown,
             involvedBinaryOptions
           )}
           sx={{ display: isSuspect ? "initial" : "none" }}
