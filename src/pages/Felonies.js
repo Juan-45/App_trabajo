@@ -86,6 +86,12 @@ const Felonies = () => {
     licensePlate: "",
     engineNo: "",
     chassisNo: "",
+    arrestedFile: "",
+    fatherName: "",
+    motherName: "",
+    felonyAddress: "",
+    felonyDate: "",
+    nickname: "",
     id: "",
   };
 
@@ -102,6 +108,8 @@ const Felonies = () => {
   const [isSuspect, setIsSuspect] = React.useState(false);
 
   const [isSuspectUnknown, setIsSuspectUnknown] = React.useState(false);
+
+  const [arrestedFile, setArrestedFile] = React.useState(false);
 
   const [currentFelony, setCurrentFelony] = React.useState(felonyDefault);
 
@@ -188,6 +196,9 @@ const Felonies = () => {
     suspectUnknown === "sí"
       ? setIsSuspectUnknown(true)
       : setIsSuspectUnknown(false);
+
+  const updateArrestedFile = (arrestedFile) =>
+    arrestedFile === "sí" ? setArrestedFile(true) : setArrestedFile(false);
 
   const submitFelony = (felony, modifying) => {
     const newFelonyIsValid = (felony) =>
@@ -332,6 +343,7 @@ const Felonies = () => {
       updateIsMaleCondition(selectedInvolved.gender);
       updateIsDriverCondition(selectedInvolved.driver);
       updateIsSuspect(selectedInvolved.type);
+      updateArrestedFile(selectedInvolved.arrestedFile);
       updateIsSuspectUnknown(selectedInvolved.isSuspectUnknown);
       setCurrentInvolved(selectedInvolved);
       setInvolvedFormReset(false);
@@ -399,6 +411,9 @@ const Felonies = () => {
       } else if (name === "driver") {
         setCurrentInvolved(updateState(name, value.adjunct));
         updateIsDriverCondition(value.adjunct);
+      } else if (name === "arrestedFile") {
+        setCurrentInvolved(updateState(name, value.adjunct));
+        updateArrestedFile(value.adjunct);
       } else setCurrentInvolved(updateState(name, value));
     },
     []
@@ -471,6 +486,28 @@ const Felonies = () => {
 
   const chassisNoOnChange = useDebounceHandler(
     getInvolvedOnChangeHandler("chassisNo")
+  );
+
+  const arrestedFileOnChange = getInvolvedOnChangeHandler("arrestedFile");
+
+  const fatherNameOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("fatherName")
+  );
+
+  const motherNameOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("motherName")
+  );
+
+  const felonyAddressOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("felonyAddress")
+  );
+
+  const felonyDateOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("felonyDate")
+  );
+
+  const nicknameOnChange = useDebounceHandler(
+    getInvolvedOnChangeHandler("nickname")
   );
 
   const getCurrentInvolvedDataStr = (involved) => {
@@ -646,6 +683,11 @@ const Felonies = () => {
       licensePlate: involved.licensePlate,
       engineNo: involved.engineNo,
       chassisNo: involved.chassisNo,
+      nickname: involved.nickname,
+      fatherName: involved.fatherName,
+      motherName: involved.motherName,
+      felonyAddress: involved.felonyAddress,
+      felonyDate: involved.felonyDate,
     };
     createTemplates(data, fileName);
   };
@@ -969,6 +1011,63 @@ const Felonies = () => {
               shouldReset={involvedFormReset}
               placeholder='FSDF45FSDF56S'
               updatedValue={currentInvolved.chassisNo}
+            />
+          </Box>
+          <ComboBox
+            label='Legajo necesario?'
+            options={involvedBinaryOptions}
+            onChange={arrestedFileOnChange}
+            shouldReset={involvedFormReset}
+            defaultValueForParentState={{
+              label: "",
+              adjunct: "",
+              id: "",
+            }}
+            updatedValue={findAdjunctInOptions(
+              currentInvolved.arrestedFile,
+              involvedBinaryOptions
+            )}
+          />
+          <Box
+            sx={{
+              display: arrestedFile ? "initial" : "none",
+            }}
+          >
+            <Input
+              label='Apodo del imputado'
+              onChange={nicknameOnChange}
+              shouldReset={involvedFormReset}
+              placeholder='Toco roberto'
+              updatedValue={currentInvolved.nickname}
+            />
+            <Input
+              label='Apellido y nombre: Padre'
+              onChange={fatherNameOnChange}
+              shouldReset={involvedFormReset}
+              placeholder='Padre/ progenitor'
+              updatedValue={currentInvolved.fatherName}
+            />
+
+            <Input
+              label='Apellido y nombre: Madre'
+              onChange={motherNameOnChange}
+              shouldReset={involvedFormReset}
+              placeholder='Madre/ progenitora'
+              updatedValue={currentInvolved.motherName}
+            />
+            <Input
+              label='Lugar del hecho o de aprehensión'
+              onChange={felonyAddressOnChange}
+              shouldReset={involvedFormReset}
+              placeholder='Av. Juan B. Justo y Bv. Liniers'
+              updatedValue={currentInvolved.felonyAddress}
+            />
+            <Input
+              label='Fecha del hecho'
+              onChange={felonyDateOnChange}
+              shouldReset={involvedFormReset}
+              placeholder='10/09/2022'
+              updatedValue={currentInvolved.felonyDate}
             />
           </Box>
         </Box>
