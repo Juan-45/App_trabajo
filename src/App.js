@@ -162,6 +162,11 @@ const App = () => {
         adjunct: "changarín",
         id: uuid(),
       },
+      {
+        label: "Ama/o de casa",
+        adjunct: "ama/o de casa",
+        id: uuid(),
+      },
     ],
     involvedBinaryOptions: [
       {
@@ -213,18 +218,18 @@ const App = () => {
   console.log("Context", contextState);
 
   return (
-    <div className='App'>
+    <div className="App">
       <ThemeProvider theme={theme}>
-        <BrowserRouter basename='/App_trabajo'>
+        <BrowserRouter basename="/App_trabajo">
           <Context.Provider value={{ ...contextState, setContextState }}>
             <NavigationBar
               navArguments={navArguments}
               loggedUserName={"OSA Herrera Juan José"}
             />
             <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/tours' element={<Tours />} />
-              <Route path='/felonies' element={<Felonies />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/tours" element={<Tours />} />
+              <Route path="/felonies" element={<Felonies />} />
             </Routes>
           </Context.Provider>
         </BrowserRouter>
