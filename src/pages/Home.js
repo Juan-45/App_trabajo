@@ -134,7 +134,7 @@ const Home = () => {
         instructor: true,
       }));
       setContextState((prevState) => {
-        const currentArr = []; //removeDefaultItemFrom([...prevState.instructors]);
+        const currentArr = prevState.instructors; //[]; //removeDefaultItemFrom([...prevState.instructors]);
 
         currentArr.push({
           label: instructor.instructor,

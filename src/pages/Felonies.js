@@ -3,7 +3,7 @@ import Context from "../Context";
 import useDebounceHandler from "hooks/useDebounceHandler";
 import useSave from "hooks/useSave";
 import {
-  getMonthString,
+  // getMonthString,
   getDateAsString,
   // dateIsValid,
   // getDateObjFrom,
@@ -99,9 +99,9 @@ const Felonies = () => {
 
   const [involvedWasSelected, setInvolvedWasSelected] = React.useState(false);
 
-  const [isMale, setIsMale] = React.useState(false);
+  //const [isMale, setIsMale] = React.useState(false);
 
-  const [isWrongfulInjury, setIsWrongfulInjury] = React.useState(false);
+  //const [isWrongfulInjury, setIsWrongfulInjury] = React.useState(false);
 
   const [isInvolvedDriver, setIsInvolvedDriver] = React.useState(false);
 
@@ -128,15 +128,15 @@ const Felonies = () => {
 
   const involvedOptions = getOptions(currentFelony.involved, "fullName");
 
-  const updateStringOnGender = React.useCallback(
+  /*const updateStringOnGender = React.useCallback(
     (gender, string) => (gender === "male" ? string + "o" : string + "a"),
     []
-  );
+  );*/
 
-  const updateString = React.useCallback(
+  /*const updateString = React.useCallback(
     (string) => updateStringOnGender(isMale, string),
     [updateStringOnGender, isMale]
-  );
+  );*/
 
   if (!currentInstructor) {
     console.log(
@@ -175,16 +175,16 @@ const Felonies = () => {
     };
   };
 
-  const updateIsMaleCondition = (gender) => {
+  /*  const updateIsMaleCondition = (gender) => {
     if (gender === "masculino") {
       setIsMale(true);
     } else setIsMale(false);
-  };
+  };*/
 
-  const updateWrongfulInjuryCondition = (felony) =>
+  /* const updateWrongfulInjuryCondition = (felony) =>
     felony === "Lesiones Culposas"
       ? setIsWrongfulInjury(true)
-      : setIsWrongfulInjury(false);
+      : setIsWrongfulInjury(false);*/
 
   const updateIsDriverCondition = (driver) =>
     driver === "sí" ? setIsInvolvedDriver(true) : setIsInvolvedDriver(false);
@@ -219,7 +219,7 @@ const Felonies = () => {
       modifyItem(prevState, "felonies", felony);
 
     if (newFelonyIsValid(felony)) {
-      updateWrongfulInjuryCondition(felony.felony);
+      //  updateWrongfulInjuryCondition(felony.felony);
       if (modifying) {
         setContextState(modifyFelony);
       } else {
@@ -237,12 +237,12 @@ const Felonies = () => {
     setIsInvolvedDriver(false);
     setIsSuspectUnknown(false);
     setIsSuspect(false);
-    setIsMale(false);
+    // setIsMale(false);
   };
 
   const resetForNewFelonyAddition = () => {
     setCurrentFelony(felonyDefault);
-    setIsWrongfulInjury(false);
+    // setIsWrongfulInjury(false);
     setFelonyFormReset(true);
     setFelonyWasSelected(false);
     resetForNewInvolvedAddition();
@@ -326,7 +326,7 @@ const Felonies = () => {
   const currentFelonyOnChange = (value, felonies) => {
     const selectedFelony = felonies.find((felony) => felony.id === value.id);
     if (selectedFelony) {
-      updateWrongfulInjuryCondition(selectedFelony.felony);
+      // updateWrongfulInjuryCondition(selectedFelony.felony);
       setCurrentFelony(selectedFelony);
       setFelonyFormReset(false);
       setFelonyWasSelected(true);
@@ -340,7 +340,7 @@ const Felonies = () => {
       (involved) => involved.id === value.id
     );
     if (selectedInvolved) {
-      updateIsMaleCondition(selectedInvolved.gender);
+      // updateIsMaleCondition(selectedInvolved.gender);
       updateIsDriverCondition(selectedInvolved.driver);
       updateIsSuspect(selectedInvolved.type);
       updateArrestedFile(selectedInvolved.arrestedFile);
@@ -407,7 +407,7 @@ const Felonies = () => {
         updateIsSuspectUnknown(value.adjunct);
       } else if (name === "gender") {
         setCurrentInvolved(updateState(name, value.adjunct));
-        updateIsMaleCondition(value.adjunct);
+        //   updateIsMaleCondition(value.adjunct);
       } else if (name === "driver") {
         setCurrentInvolved(updateState(name, value.adjunct));
         updateIsDriverCondition(value.adjunct);
@@ -590,7 +590,7 @@ const Felonies = () => {
   const generateBaseDocs = (felony) => {
     const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}.docx`;
     console.log("fileName pasado a createTemplate", fileName);
-    const getVehiclesDataStr = (involved, isWrongfulInjury) => {
+    const getVehiclesDataStr = (involved /*, isWrongfulInjury*/) => {
       let vehiclesDataStr = "";
 
       const getCurrentVehicleDataStr = (involved) => {
@@ -607,7 +607,7 @@ const Felonies = () => {
         return currentVehicleDataStr;
       };
 
-      if (involved.length !== 0 && isWrongfulInjury) {
+      if (involved.length !== 0 /*&& isWrongfulInjury*/) {
         involved.forEach((obj) => {
           if (obj.driver === "sí") {
             vehiclesDataStr = vehiclesDataStr + getCurrentVehicleDataStr(obj);
@@ -640,7 +640,9 @@ const Felonies = () => {
       day: felony.day,
       month: felony.month,
       year: felony.year,
-      vehiclesDataStr: getVehiclesDataStr(felony.involved, isWrongfulInjury),
+      vehiclesDataStr: getVehiclesDataStr(
+        felony.involved /*, isWrongfulInjury*/
+      ),
     };
 
     createTemplates(data, fileName);
@@ -663,10 +665,14 @@ const Felonies = () => {
       year: felony.year,
       dateAsStr: felony.summaryAbbreviatedDateStr,
       victims: getVictimsStr(felony.involved).victimsFullNameStr,
+      victimsDataStr: getVictimsStr(felony.involved).victimsDataStr,
       founder: getTypeDataStr(felony.involved, "causante").involvedFullNameStr,
       informer: getTypeDataStr(felony.involved, "denunciante")
         .involvedFullNameStr,
+      informerDataStr: getTypeDataStr(felony.involved, "denunciante")
+        .involvedDataStr,
       suspects: getSuspectsStr(felony.involved).suspectsFullNamesStr,
+      suspectsDataStr: getSuspectsStr(felony.involved).suspectsDataStr,
       fullName: involved.fullName,
       gender: involved.gender,
       nationality: involved.nationality,
@@ -719,7 +725,7 @@ const Felonies = () => {
     <PageWrapper>
       <PageTitle>Hechos delictivos.</PageTitle>
       <ComboBox
-        label="Hechos"
+        label='Hechos'
         options={feloniesOptions}
         shouldReset={felonyFormReset}
         onChange={(value) => currentFelonyOnChange(value, felonies)}
@@ -732,21 +738,21 @@ const Felonies = () => {
       <CustomPaper>
         <PageTitle>{currentFelonyTitle}</PageTitle>
         <Input
-          label="Carátula"
+          label='Carátula'
           onChange={felonyOnChange}
           shouldReset={felonyFormReset}
-          placeholder="Suarez Pedro S/ Amenazas"
+          placeholder='Suarez Pedro S/ Amenazas'
           updatedValue={currentFelony.felony}
         />
         <Input
-          label="IPP Nro"
+          label='IPP Nro'
           onChange={ippOnChange}
           shouldReset={felonyFormReset}
-          placeholder="4578-22"
+          placeholder='4578-22'
           updatedValue={currentFelony.ipp}
         />
         <ComboBox
-          label="Fiscalía"
+          label='Fiscalía'
           options={prosecutions}
           onChange={prosecutionOnChange}
           shouldReset={felonyFormReset}
@@ -761,7 +767,7 @@ const Felonies = () => {
           )}
         />
         <ComboBox
-          label="Juzgado de garantías"
+          label='Juzgado de garantías'
           options={courts}
           onChange={courtOnChange}
           shouldReset={felonyFormReset}
@@ -775,7 +781,7 @@ const Felonies = () => {
       </CustomPaper>
       <PageTitle display={felonyWasSelected}>Involucrados.</PageTitle>
       <ComboBox
-        label="Involucrados"
+        label='Involucrados'
         options={involvedOptions}
         onChange={(value) =>
           currentInvolvedOnChange(value, currentFelony.involved)
@@ -795,7 +801,7 @@ const Felonies = () => {
           {!isSuspectUnknown ? currentInvolvedTitle : "NN o varios"}
         </PageTitle>
         <ComboBox
-          label="Tipo"
+          label='Tipo'
           options={involvedTypesOptions}
           onChange={typeOnChange}
           shouldReset={involvedFormReset}
@@ -810,7 +816,7 @@ const Felonies = () => {
           )}
         />
         <ComboBox
-          label="Imputado NN o varios"
+          label='Imputado NN o varios'
           options={involvedBinaryOptions}
           onChange={isSuspectUnknownOnChange}
           shouldReset={involvedFormReset}
@@ -827,7 +833,7 @@ const Felonies = () => {
         />
         <Box sx={{ display: isSuspectUnknown ? "none" : "initial" }}>
           <ComboBox
-            label="Género"
+            label='Género'
             options={involvedGenderOptions}
             onChange={genderOnChange}
             shouldReset={involvedFormReset}
@@ -842,21 +848,21 @@ const Felonies = () => {
             )}
           />
           <Input
-            label="Apellido y Nombre"
+            label='Apellido y Nombre'
             onChange={fullnameOnChange}
             shouldReset={involvedFormReset}
-            placeholder="Suarez Pedro"
+            placeholder='Suarez Pedro'
             updatedValue={currentInvolved.fullName}
           />
           <Input
-            label="Nacionalidad"
+            label='Nacionalidad'
             onChange={nationalityOnChange}
             shouldReset={involvedFormReset}
-            placeholder="argentina"
+            placeholder='argentina'
             updatedValue={currentInvolved.nationality}
           />
           <ComboBox
-            label="Instrucción"
+            label='Instrucción'
             options={involvedBinaryOptions}
             onChange={educationOnChange}
             shouldReset={involvedFormReset}
@@ -871,7 +877,7 @@ const Felonies = () => {
             )}
           />
           <ComboBox
-            label="Estado civil"
+            label='Estado civil'
             options={involvedCivilStatusOptions}
             onChange={civilStatusOnChange}
             shouldReset={involvedFormReset}
@@ -886,7 +892,7 @@ const Felonies = () => {
             )}
           />
           <ComboBox
-            label="Ocupación"
+            label='Ocupación'
             options={involvedOccupationOptions}
             onChange={occupationOnChange}
             shouldReset={involvedFormReset}
@@ -901,42 +907,42 @@ const Felonies = () => {
             )}
           />
           <Input
-            label="Edad"
+            label='Edad'
             onChange={ageOnChange}
             shouldReset={involvedFormReset}
-            placeholder="18"
+            placeholder='18'
             updatedValue={currentInvolved.age}
           />
           <Input
-            label="Fecha de nacimiento"
+            label='Fecha de nacimiento'
             onChange={birthDateOnChange}
             shouldReset={involvedFormReset}
-            placeholder="18/02/1991"
+            placeholder='18/02/1991'
             updatedValue={currentInvolved.birthDate}
           />
           <Input
-            label="DNI"
+            label='DNI'
             onChange={dniOnChange}
             shouldReset={involvedFormReset}
-            placeholder="36857452"
+            placeholder='36857452'
             updatedValue={currentInvolved.dni}
           />
           <Input
-            label="Domicilio"
+            label='Domicilio'
             onChange={addressOnChange}
             shouldReset={involvedFormReset}
-            placeholder="Estrada nro. 850 de Pergamino"
+            placeholder='Estrada nro. 850 de Pergamino'
             updatedValue={currentInvolved.address}
           />
           <Input
-            label="Teléfono"
+            label='Teléfono'
             onChange={phoneOnChange}
             shouldReset={involvedFormReset}
-            placeholder="2477-578968"
+            placeholder='2477-578968'
             updatedValue={currentInvolved.phone}
           />
           <ComboBox
-            label="Conductor"
+            label='¿Desea asociar un vehículo al involucrado?'
             options={involvedBinaryOptions}
             onChange={driverOnChange}
             shouldReset={involvedFormReset}
@@ -949,9 +955,9 @@ const Felonies = () => {
               currentInvolved.driver,
               involvedBinaryOptions
             )}
-            sx={{
+            /* sx={{
               display: isWrongfulInjury ? "initial" : "none",
-            }}
+            }}*/
           />
           <Box
             sx={{
@@ -959,7 +965,7 @@ const Felonies = () => {
             }}
           >
             <ComboBox
-              label="Tipo de vehículo"
+              label='Tipo de vehículo'
               options={involvedVehicleTypeOptions}
               onChange={vehicleTypeOnChange}
               shouldReset={involvedFormReset}
@@ -974,50 +980,50 @@ const Felonies = () => {
               )}
             />
             <Input
-              label="Marca"
+              label='Marca'
               onChange={brandOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Renault"
+              placeholder='Renault'
               updatedValue={currentInvolved.brand}
             />
             <Input
-              label="Modelo"
+              label='Modelo'
               onChange={modelOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Clio"
+              placeholder='Clio'
               updatedValue={currentInvolved.model}
             />
             <Input
-              label="Color"
+              label='Color'
               onChange={colourOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Rojo"
+              placeholder='Rojo'
               updatedValue={currentInvolved.colour}
             />
             <Input
-              label="Dominio"
+              label='Dominio'
               onChange={licensePlateOnChange}
               shouldReset={involvedFormReset}
-              placeholder="ADF-321"
+              placeholder='ADF-321'
               updatedValue={currentInvolved.licensePlate}
             />
             <Input
-              label="Motor Nro."
+              label='Motor Nro.'
               onChange={engineNoOnChange}
               shouldReset={involvedFormReset}
-              placeholder="FSDF45FSDF56S"
+              placeholder='FSDF45FSDF56S'
               updatedValue={currentInvolved.engineNo}
             />
             <Input
-              label="Chasis/cuadro Nro."
+              label='Chasis/cuadro Nro.'
               onChange={chassisNoOnChange}
               shouldReset={involvedFormReset}
-              placeholder="FSDF45FSDF56S"
+              placeholder='FSDF45FSDF56S'
               updatedValue={currentInvolved.chassisNo}
             />
           </Box>
           <ComboBox
-            label="Legajo necesario?"
+            label='¿Legajo necesario?'
             options={involvedBinaryOptions}
             onChange={arrestedFileOnChange}
             shouldReset={involvedFormReset}
@@ -1030,6 +1036,9 @@ const Felonies = () => {
               currentInvolved.arrestedFile,
               involvedBinaryOptions
             )}
+            sx={{
+              display: isSuspect ? "initial" : "none",
+            }}
           />
           <Box
             sx={{
@@ -1037,46 +1046,46 @@ const Felonies = () => {
             }}
           >
             <Input
-              label="Apodo del imputado"
+              label='Apodo del imputado'
               onChange={nicknameOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Toco roberto"
+              placeholder='Toco roberto'
               updatedValue={currentInvolved.nickname}
             />
             <Input
-              label="Apellido y nombre: Padre"
+              label='Apellido y nombre: Padre'
               onChange={fatherNameOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Padre/ progenitor"
+              placeholder='Padre/ progenitor'
               updatedValue={currentInvolved.fatherName}
             />
 
             <Input
-              label="Apellido y nombre: Madre"
+              label='Apellido y nombre: Madre'
               onChange={motherNameOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Madre/ progenitora"
+              placeholder='Madre/ progenitora'
               updatedValue={currentInvolved.motherName}
             />
             <Input
-              label="Lugar del hecho o de aprehensión"
+              label='Lugar del hecho o de aprehensión'
               onChange={felonyAddressOnChange}
               shouldReset={involvedFormReset}
-              placeholder="Av. Juan B. Justo y Bv. Liniers"
+              placeholder='Av. Juan B. Justo y Bv. Liniers'
               updatedValue={currentInvolved.felonyAddress}
             />
             <Input
-              label="Fecha del hecho"
+              label='Fecha del hecho'
               onChange={felonyDateOnChange}
               shouldReset={involvedFormReset}
-              placeholder="10/09/2022"
+              placeholder='10/09/2022'
               updatedValue={currentInvolved.felonyDate}
             />
           </Box>
         </Box>
       </CustomPaper>
       <CustomPaper>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button
             onClick={() => submitFelony(currentFelony, felonyWasSelected)}
             sx={{ mr: "25px" }}
@@ -1096,7 +1105,7 @@ const Felonies = () => {
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button onClick={resetForNewFelonyAddition} sx={{ mr: "25px" }}>
             Agregar otro hecho
           </Button>
@@ -1111,7 +1120,7 @@ const Felonies = () => {
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button
             onClick={() => generateBaseDocs(currentFelony)}
             sx={{ mr: "25px" }}
@@ -1131,7 +1140,7 @@ const Felonies = () => {
         </Grid>
       </CustomPaper>
       <CustomPaper display={felonyWasSelected /*true developmentMode*/}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button onClick={saveButtonHandler} sx={{ mr: "25px" }}>
             Guardar datos
           </Button>
@@ -1139,7 +1148,7 @@ const Felonies = () => {
       </CustomPaper>
 
       <CustomPaper display={true /*DEVELOPMENT MODE*/}>
-        <Grid container justifyContent="space-between">
+        <Grid container justifyContent='space-between'>
           <Button onClick={developmentDeleteFelonies} sx={{ mr: "25px" }}>
             Borrar datos: felony, felonies
           </Button>
