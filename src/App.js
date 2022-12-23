@@ -73,6 +73,7 @@ const App = () => {
       { label: "Juzg. Gtias. Nro. 1", adjunct: "default", id: uuid() },
       { label: "Juzg. Gtias. Nro. 2", adjunct: "default", id: uuid() },
       { label: "Juzg. Gtias. Nro. 3", adjunct: "default", id: uuid() },
+      { label: "Juzg. Gtias. del Menor", adjunct: "default", id: uuid() },
     ],
 
     involvedTypesOptions: [

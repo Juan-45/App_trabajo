@@ -512,7 +512,7 @@ const Felonies = () => {
 
   const getCurrentInvolvedDataStr = (involved) => {
     const getEducation = (education) =>
-      education === "sí" ? "instruido" : "no instruido";
+      education === "sí" ? "instruido|a" : "no instruido|a";
 
     let currentInvolvedDataStr = `${involved.fullName.toUpperCase()}, ${
       involved.age
@@ -586,6 +586,16 @@ const Felonies = () => {
 
   const getChassisLabel = (vehicleType) =>
     vehicleType === "moto" ? "cuadro" : "chasis";
+
+  const getTypeLabel = (type) => {
+    if (type === "víctima") {
+      return "Vtma.";
+    } else if (type === "imputado|a") {
+      return "Impt.";
+    } else {
+      return type;
+    }
+  };
 
   const generateBaseDocs = (felony) => {
     const fileName = `${felony.felony} - ${felony.summaryAbbreviatedDateStr}.docx`;
@@ -673,6 +683,7 @@ const Felonies = () => {
         .involvedDataStr,
       suspects: getSuspectsStr(felony.involved).suspectsFullNamesStr,
       suspectsDataStr: getSuspectsStr(felony.involved).suspectsDataStr,
+      involvedType: getTypeLabel(involved.type),
       fullName: involved.fullName,
       gender: involved.gender,
       nationality: involved.nationality,
