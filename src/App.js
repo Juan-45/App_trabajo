@@ -236,7 +236,7 @@ const App = () => {
   return (
     <div className='App'>
       <ThemeProvider theme={theme}>
-        <BrowserRouter basename='/App_trabajo'>
+        <BrowserRouter /*basename='/App_trabajo'*/>
           <Context.Provider value={{ ...contextState, setContextState }}>
             <NavigationBar
               navArguments={navArguments}
