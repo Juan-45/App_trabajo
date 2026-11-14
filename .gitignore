@@ -1,0 +1,6 @@
+# Carpetas con credenciales y variables de entorno
+.aws/
+env_var/
+
+# Archivo de configuración en la raíz
+app.yaml

@@ -1,0 +1,6 @@
+Flask>=1.0.0
+flask-limiter
+cryptography
+python-jose[cryptography]
+requests
+boto3
