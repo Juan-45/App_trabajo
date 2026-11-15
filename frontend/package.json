@@ -1,0 +1,34 @@
+{
+  "name": "app-os-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
+    "@mui/icons-material": "5.11.16",
+    "@mui/material": "5.12.3",
+    "@mui/styled-engine": "5.12.3",
+    "axios": "1.4.0",
+    "docxtemplater": "3.40.2",
+    "mergician": "1.1.0",
+    "pizzip": "3.1.5",
+    "prop-types": "15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "6.11.1",
+    "use-debounce": "9.0.4",
+    "uuid": "9.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.3.0",
+    "vite": "8.3.8"
+  }
+}
