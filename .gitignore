@@ -3,3 +3,4 @@
 env_var/
 
 # Archivo de configuración en la raíz
+/app.yaml
